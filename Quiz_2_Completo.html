@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz 2 – Corso Completo Cap. 1–30</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0b0d14; --surface: #13161f; --surface2: #1a1f2e;
+    --border: #252a3a; --border2: #2d3448;
+    --text: #e8eaf0; --muted: #6b7280; --dim: #9ca3af;
+    --accent: #10b981; --glow: rgba(16,185,129,0.1);
+  }
+  body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  .hero {
+    background: linear-gradient(135deg, #001a0d 0%, #0b0d14 60%, #001a1a 100%);
+    padding: 52px 24px 40px; text-align: center;
+    border-bottom: 1px solid var(--border); position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ""; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block; background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.35); color: #6ee7b7;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 5px 16px; border-radius: 99px; margin-bottom: 18px;
+  }
+  .hero h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); font-weight: 900; color: #fff; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 12px; }
+  .hero h1 span { color: #34d399; }
+  .hero p { color: var(--muted); font-size: 0.95rem; max-width: 520px; margin: 0 auto 32px; line-height: 1.6; }
+  .stats-row { display: flex; justify-content: center; gap: 0; max-width: 420px; margin: 0 auto;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .stat { flex: 1; padding: 16px 8px; text-align: center; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-n { font-size: 1.5rem; font-weight: 800; color: #34d399; }
+  .stat-l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+  .prog-wrap { background: var(--surface); padding: 14px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .prog-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+  .prog-label { font-size: 0.78rem; color: var(--muted); }
+  .prog-count { font-size: 0.78rem; font-weight: 700; color: #34d399; }
+  .prog-bg { background: var(--border); border-radius: 99px; height: 5px; }
+  .prog-fill { background: linear-gradient(90deg, #10b981, #06b6d4); height: 5px; border-radius: 99px; transition: width 0.35s ease; width: 0%; }
+
+  .sec-head { max-width: 720px; margin: 0 auto; padding: 28px 24px 8px; }
+  .sec-chip {
+    display: inline-flex; align-items: center;
+    background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25);
+    color: #6ee7b7; font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 6px;
+  }
+  .sec-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-top: 6px; }
+
+  .cards { max-width: 720px; margin: 0 auto; padding: 8px 24px; }
+  .qcard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; margin-bottom: 12px; transition: border-color 0.2s; }
+  .qcard:hover { border-color: var(--border2); }
+  .qnum { font-size: 0.7rem; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .qtext { font-size: 0.97rem; font-weight: 600; color: #f1f5f9; line-height: 1.55; margin-bottom: 14px; }
+
+  .opt { display: flex; align-items: flex-start; gap: 12px; padding: 11px 14px; border-radius: 9px; border: 1.5px solid var(--border2); margin-bottom: 7px; cursor: pointer; transition: all 0.18s; }
+  .opt:hover { border-color: #10b981; background: var(--glow); }
+  .opt.selected { border-color: #10b981; background: var(--glow); }
+  .opt.correct { border-color: #10b981; background: rgba(16,185,129,0.1); }
+  .opt.wrong   { border-color: #ef4444; background: rgba(239,68,68,0.08); }
+  .opt input[type=radio] { display: none; }
+  .opt-l { width: 22px; height: 22px; border-radius: 6px; background: var(--border2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: var(--muted); flex-shrink: 0; transition: all 0.18s; }
+  .opt.selected .opt-l { background: #10b981; color: #fff; }
+  .opt.correct  .opt-l { background: #10b981; color: #fff; }
+  .opt.wrong    .opt-l { background: #ef4444; color: #fff; }
+  .opt label { cursor: pointer; font-size: 0.9rem; color: #cbd5e1; line-height: 1.45; }
+
+  .footer { max-width: 720px; margin: 0 auto; padding: 16px 24px 48px; }
+  .submit-btn { display: block; width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #06b6d4); color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+  .submit-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  .submit-btn:disabled { background: var(--border2); color: var(--muted); cursor: not-allowed; transform: none; }
+
+  #result { display: none; max-width: 620px; margin: 0 auto; padding: 32px 24px 60px; }
+  .res-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 36px 28px; text-align: center; }
+  .res-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.9rem; font-weight: 800; }
+  .rg { background: rgba(16,185,129,0.1); color: #10b981; border: 3px solid #10b981; }
+  .rm { background: rgba(245,158,11,0.1); color: #f59e0b; border: 3px solid #f59e0b; }
+  .rb { background: rgba(239,68,68,0.1); color: #ef4444; border: 3px solid #ef4444; }
+  .res-title { font-size: 1.35rem; font-weight: 800; color: #f1f5f9; margin-bottom: 6px; }
+  .res-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .res-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+  .rs { text-align: center; }
+  .rs-n { font-size: 1.5rem; font-weight: 800; }
+  .rs-n.g { color: #10b981; } .rs-n.r { color: #ef4444; } .rs-n.b { color: #34d399; }
+  .rs-l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .fb-box { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-align: left; margin-bottom: 22px; }
+  .fb-title { font-size: 0.72rem; font-weight: 700; color: #34d399; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .fb-text { font-size: 0.88rem; color: var(--dim); line-height: 1.7; }
+  .loading { font-style: italic; color: var(--muted); }
+
+  .errors-box { margin-top: 20px; text-align: left; }
+  .errors-title { font-size: 0.8rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .err-item { background: var(--bg); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+  .err-num { font-size: 0.68rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .err-question { font-size: 0.88rem; font-weight: 600; color: #e2e8f0; margin-bottom: 10px; line-height: 1.45; }
+  .err-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+  .err-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .err-badge.wb { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+  .err-badge.cb { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .err-answer { font-size: 0.85rem; color: var(--dim); line-height: 1.4; }
+  .err-answer.ca { color: #6ee7b7; font-weight: 500; }
+  .no-errors { text-align: center; padding: 20px; color: #10b981; font-size: 0.95rem; font-weight: 600; }
+
+  .res-btns { display: flex; gap: 12px; }
+  .btn-retry { flex: 1; padding: 13px; background: none; border: 1.5px solid var(--border2); color: var(--dim); border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+  .btn-retry:hover { border-color: #10b981; color: #34d399; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Simulazione Esame Completa</div>
+  <h1>Quiz 2 – <span>Corso Completo</span></h1>
+  <p>117 domande situazionali su tutti e 30 i capitoli del corso. Il vero test da esame: nessuna definizione, solo ragionamento applicato.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n">117</div><div class="stat-l">Domande</div></div>
+    <div class="stat"><div class="stat-n">30</div><div class="stat-l">Capitoli</div></div>
+    <div class="stat"><div class="stat-n">70%</div><div class="stat-l">Per passare</div></div>
+    <div class="stat"><div class="stat-n" id="s-done">0</div><div class="stat-l">Risposte</div></div>
+  </div>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-top">
+    <span class="prog-label">Avanzamento</span>
+    <span class="prog-count" id="prog-count">0 / 117</span>
+  </div>
+  <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+</div>
+
+<div id="quiz-body"></div>
+
+<div class="footer">
+  <button class="submit-btn" id="submit-btn" onclick="submitQuiz()" disabled>Consegna il Quiz 2</button>
+</div>
+
+<div id="result">
+  <div class="res-card">
+    <div class="res-circle" id="res-circle"></div>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-sub" id="res-sub"></div>
+    <div class="res-stats">
+      <div class="rs"><div class="rs-n g" id="rs-ok">-</div><div class="rs-l">Corrette</div></div>
+      <div class="rs"><div class="rs-n r" id="rs-no">-</div><div class="rs-l">Errate</div></div>
+      <div class="rs"><div class="rs-n b" id="rs-pct">-</div><div class="rs-l">Punteggio</div></div>
+    </div>
+    <div class="fb-box">
+      <div class="fb-title">💬 Feedback personalizzato</div>
+      <div class="fb-text" id="fb-text"><span class="loading">Generazione in corso…</span></div>
+    </div>
+    <div class="errors-box" id="errors-box"></div>
+    <div class="res-btns">
+      <button class="btn-retry" onclick="resetQuiz()">🔄 Riprova</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const sections = [
+  {
+    chip: "Cap. 1 — Il Progetto",
+    title: "Definizione, caratteristiche e confronto con il Processo",
+    qs: [
+      { q: "Quale delle seguenti affermazioni descrive correttamente la 'temporaneità' di un progetto?", o: ["Il progetto può essere interrotto in qualsiasi momento dal management", "Il progetto ha un inizio e una fine definiti e non è un'attività continuativa", "Il progetto dura al massimo un anno solare", "Il progetto termina solo quando il cliente è soddisfatto"], c: 1 },
+      { q: "Due progetti identici nello scopo ma con team diversi possono comunque essere considerati 'unici' secondo il PMBOK. Perché?", o: ["Perché hanno codici identificativi diversi nel sistema gestionale", "Perché ogni progetto presenta elementi di differenziazione, incluse le persone, il contesto e le condizioni", "Perché sono avviati in momenti diversi", "Non possono: se lo scopo è identico il progetto non è unico"], c: 1 },
+      { q: "Quale differenza fondamentale esiste tra Progetto e Processo in termini di output?", o: ["Il progetto produce output standardizzati, il processo produce output unici", "Il progetto produce output con caratteristiche di unicità, il processo produce output standardizzati", "Non vi è differenza: entrambi producono output ripetibili", "Il processo produce output più innovativi del progetto"], c: 1 },
+      { q: "In quale situazione un'attività di produzione può essere considerata un Progetto?", o: ["Quando si produce lo stesso prodotto ogni giorno con le stesse modalità", "Quando si avvia la produzione di un nuovo prodotto mai realizzato prima, con un inizio e fine definiti", "Quando coinvolge più di 10 persone dell'organizzazione", "Quando ha un budget superiore a una soglia prestabilita"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 1 — Programma e Portfolio",
+    title: "Struttura gerarchica: Portfolio, Programma e Progetto",
+    qs: [
+      { q: "Quale vantaggio principale offre la gestione coordinata di un Programma rispetto alla gestione separata dei singoli progetti?", o: ["Riduce il numero di Project Manager necessari", "Permette un livello di controllo superiore e ottimizza l'uso delle risorse condivise", "Elimina la necessità di un Project Charter per ogni progetto", "Consente di bypassare le procedure formali di approvazione"], c: 1 },
+      { q: "Il Portfolio è paragonabile a un portafoglio azionario perché:", o: ["Contiene solo progetti ad alto rischio e alto rendimento", "Bilancia rischio e rendimento, diversifica le iniziative e massimizza il ritorno strategico sull'investimento", "È gestito esclusivamente dal CFO aziendale", "Viene liquidato alla fine dell'anno fiscale"], c: 1 },
+      { q: "Un'azienda ha tre progetti: A (sviluppo app mobile), B (lancio marketing dell'app), C (infrastruttura server). Tutti puntano a lanciare il nuovo servizio. Come si classificano correttamente?", o: ["Tre Portfolio distinti con obiettivi separati", "Tre Processi operativi dell'azienda", "Un Programma composto da tre Progetti correlati con obiettivo comune", "Un singolo Progetto suddiviso in tre fasi"], c: 2 },
+    ]
+  },
+  {
+    chip: "Cap. 2 — Tipologie di Progetti",
+    title: "Classificazione dei progetti per tipo di cliente e obiettivo",
+    qs: [
+      { q: "In un progetto 'sviluppo prodotto per il mercato', chi svolge il ruolo di 'cliente' interno?", o: ["Il Project Sponsor", "Il PMO aziendale", "Il Marketing", "Il team di sviluppo"], c: 2 },
+      { q: "Qual è la differenza principale tra un progetto 'commessa' e un progetto 'guidato da capitolato'?", o: ["Nella commessa il cliente definisce le specifiche direttamente; nel capitolato le specifiche sono contenute in un documento di gara", "Non vi è differenza: entrambi hanno specifiche definite dal cliente", "Il capitolato non prevede un processo competitivo di selezione", "La commessa è sempre interna all'organizzazione"], c: 0 },
+      { q: "Un progetto di 'sviluppo in base alle esigenze del cliente' si distingue per:", o: ["La totale assenza di interazione con il cliente durante lo sviluppo", "L'alto grado di personalizzazione e la co-progettazione con il cliente", "Il fatto che le specifiche siano definite esclusivamente dal Marketing", "L'assenza di un contratto formale con il committente"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 3 — Metodologia PM",
+    title: "Definizione, componenti e complessità del Project Management",
+    qs: [
+      { q: "Quale dei seguenti è un esempio di 'Tecnica' nel Project Management (non 'Strumento')?", o: ["Microsoft Project", "Un template di WBS precompilato", "Il metodo PERT per la stima della durata delle attività", "Un sistema informativo di reportistica"], c: 2 },
+      { q: "Un'azienda gestisce contemporaneamente 30 piccoli progetti con risorse condivise. Quale fattore di complessità è prevalente?", o: ["Complessità tecnica delle soluzioni adottate", "Numero di progetti contemporanei e condivisione delle risorse", "Dimensione della singola area aziendale", "Complessità organizzativa del singolo progetto"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 4 — Ruoli Chiave",
+    title: "PMO, Project Manager e Project Sponsor",
+    qs: [
+      { q: "Un Project Manager deve risolvere un problema che va oltre la sua autorità organizzativa. A chi si rivolge?", o: ["Direttamente al cliente esterno", "Al PMO per una soluzione tecnica", "Al Project Sponsor per rimuovere l'ostacolo strategico", "Al team di progetto per una soluzione condivisa"], c: 2 },
+      { q: "Quale affermazione sul PMO è corretta?", o: ["Il PMO gestisce operativamente tutti i progetti dell'azienda", "Il PMO definisce le metodologie, standardizza i processi e riporta alla direzione sullo stato del portafoglio", "Il PMO sostituisce il Project Manager nei progetti complessi", "Il PMO è presente solo nelle grandi aziende con più di 100 dipendenti"], c: 1 },
+      { q: "Il Project Manager è paragonabile a un 'direttore d'orchestra' perché:", o: ["Suona lui stesso tutti gli strumenti in caso di necessità", "Coordina specialisti diversi verso un obiettivo comune senza dover eseguire direttamente ogni attività", "Decide autonomamente il programma musicale senza consultare nessuno", "Valuta e licenzia i musicisti che non performano adeguatamente"], c: 1 },
+      { q: "Quale competenza del PM moderno è considerata oggi altrettanto importante — se non più — delle competenze tecniche?", o: ["La conoscenza approfondita di tutti i linguaggi di programmazione", "Le competenze relazionali: comunicazione, mediazione, negoziazione e gestione dei conflitti", "La capacità di redigere autonomamente tutti i documenti di progetto", "La conoscenza dettagliata del settore industriale del cliente"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 5 — Vincoli di Progetto",
+    title: "Triple Constraint e altri vincoli",
+    qs: [
+      { q: "Un cliente chiede di aggiungere nuove funzionalità al prodotto a metà progetto senza aumentare il budget. Quale vincolo del Triplo Vincolo è sotto pressione?", o: ["Solo il Tempo, che dovrà aumentare", "Solo il Costo, che è fisso", "Tempo e/o Costo, perché aumentare lo Scope senza toccare il budget comprime necessariamente un altro vincolo", "Nessuno: le funzionalità aggiuntive non impattano il Triplo Vincolo"], c: 2 },
+      { q: "Quale tra i seguenti NON rientra nei vincoli 'aggiuntivi' oltre al Triplo Vincolo?", o: ["Disponibilità di personale qualificato", "Tempi di consegna dei fornitori", "Il numero di stakeholder del progetto", "Requisiti normativi di qualità"], c: 2 },
+      { q: "In un progetto con scadenza fissa non negoziabile, quale leva ha il PM per gestire un aumento di scope richiesto dal cliente?", o: ["Aumentare il tempo del progetto", "Aumentare il budget e/o ridurre altri elementi dello scope originale", "Ignorare la richiesta del cliente", "Ridurre la qualità dei deliverable senza comunicarlo"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 6 — Motivi di Insuccesso",
+    title: "Cause di fallimento e strategie di prevenzione",
+    qs: [
+      { q: "Un progetto viene consegnato in ritardo di 6 mesi. L'analisi post-mortem rivela che nessuno aveva identificato la dipendenza critica da un fornitore esterno. Quale causa di fallimento è prevalente?", o: ["Mancanza di commitment da parte della direzione", "Inadeguatezza dell'analisi dei rischi e delle criticità", "Cattiva gestione delle richieste di modifica", "Inadeguatezza del sistema informativo di gestione"], c: 1 },
+      { q: "Il 'Scope Creep' è classificato come causa di fallimento perché:", o: ["Aumenta la qualità del prodotto finale oltre le aspettative", "Le modifiche non documentate e non gestite formalmente alterano tempi, costi e risorse senza controllo", "Riduce il numero di stakeholder coinvolti nel progetto", "Migliora il rapporto con il cliente attraverso maggiore flessibilità"], c: 1 },
+      { q: "Quale coppia di cause di fallimento è più strettamente correlata tra loro?", o: ["Mancanza del PM e mancanza di pianificazione", "Sottostima della complessità e eccessiva comunicazione", "Mancanza di commitment e troppi controlli misurabili", "Inadeguatezza delle risorse e troppa pianificazione"], c: 0 },
+    ]
+  },
+  {
+    chip: "Cap. 9 — Processi di Avvio",
+    title: "Stakeholder, Project Charter e processo di Initiating",
+    qs: [
+      { q: "Il processo di Avvio (Initiating) include tre attività principali. Quale tra le seguenti NON ne fa parte?", o: ["Incarico al Project Manager da parte dello Sponsor", "Identificazione degli Stakeholder", "Stesura del Project Charter", "Sviluppo del Piano di Schedulazione dettagliato"], c: 3 },
+      { q: "Un'associazione ambientalista si oppone pubblicamente a un progetto di costruzione. Come si classifica nella matrice Potere/Interesse?", o: ["Stakeholder Chiave (Alto Potere, Alto Interesse)", "Stakeholder Istituzionale (Alto Potere, Basso Interesse)", "Stakeholder Operativo (Basso Potere, Alto Interesse)", "Stakeholder Marginale (Basso Potere, Basso Interesse)"], c: 0 },
+      { q: "Il Project Charter conferisce al PM l'autorità di:", o: ["Modificare il budget aziendale a sua discrezione", "Utilizzare le risorse organizzative per le attività del progetto", "Assumere e licenziare personale per il progetto", "Approvare autonomamente tutte le modifiche allo scope"], c: 1 },
+      { q: "Quale affermazione sugli stakeholder è corretta?", o: ["Solo gli stakeholder interni influenzano il successo del progetto", "Uno stakeholder può essere sia influenzato dal progetto sia influenzarne il successo positivamente o negativamente", "Gli stakeholder esterni non hanno potere reale sul progetto", "Il PM non deve occuparsi degli stakeholder con basso interesse"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 10 — Scope Management",
+    title: "Pianificazione, WBS e gestione dell'ambito",
+    qs: [
+      { q: "Un Project Manager ha pianificato solo ad alto livello le attività dei prossimi 6 mesi, rimandando il dettaglio a quando saranno più vicine. Quale tecnica sta applicando?", o: ["Scope Creep controllato", "Rolling Wave Planning", "WBS Decomposition completa", "Critical Path Method"], c: 1 },
+      { q: "Durante un progetto di sviluppo software, il cliente chiede di aggiungere una funzione non prevista senza modificare formalmente il contratto. Il PM la inserisce silenziosamente nella WBS. Qual è il problema?", o: ["Nessun problema: il PM sta servendo il cliente", "È un caso di Scope Creep: la modifica non è stata formalmente approvata e potrebbe impattare tempi e costi", "È corretto perché la WBS può essere modificata liberamente", "È un esempio di Gold Plating accettabile"], c: 1 },
+      { q: "La WBS è considerata uno 'strumento etico' dal PMI perché:", o: ["Elimina qualsiasi ambiguità tecnica nel progetto", "Rende visibile e trasparente a tutti gli stakeholder il contenuto del progetto, favorendo la comprensione condivisa dello scope", "Vincola il cliente a non richiedere modifiche", "Permette al PM di controllare il team senza riunioni frequenti"], c: 1 },
+      { q: "Quale affermazione sul Work Package è corretta?", o: ["È il livello più alto della WBS e descrive il deliverable principale", "È l'ultimo elemento della WBS e può contenere attività; per esso è terminata la scomposizione gerarchica", "Non può essere ulteriormente scomposto in nessun caso", "Ha sempre una durata massima di un giorno lavorativo"], c: 1 },
+      { q: "Secondo la Regola del 100%, se un nodo WBS 'Documentazione' viene scomposto in 'Manuale Utente' e 'Manuale Tecnico', cosa deve essere verificato?", o: ["Che i due documenti abbiano la stessa durata di realizzazione", "Che l'insieme dei due deliverable copra il 100% del lavoro del nodo padre, senza aggiungere né tralasciare nulla", "Che ogni deliverable sia assegnato a un team diverso", "Che la somma dei costi dei due deliverable non superi il budget del nodo padre"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 11 — Schedule Management",
+    title: "Attività, milestone, stime, legami e CPM",
+    qs: [
+      { q: "Un'attività ha descrizione 'Completare la progettazione'. Perché non rispetta i criteri di una buona attività di progetto?", o: ["È troppo breve per essere gestibile", "Non è misurabile: non definisce un output concreto e verificabile", "Non è assegnata a un responsabile", "Ha una durata troppo lunga per essere controllabile"], c: 1 },
+      { q: "Un PM stima la durata di un'attività complessa usando i dati storici di un progetto simile realizzato 2 anni fa. Quale tecnica di stima sta usando?", o: ["Stima Parametrica", "Stima Bottom-Up", "Stima per Analogia", "PERT"], c: 2 },
+      { q: "Con la tecnica PERT, una attività ha tO=2, tM=5, tP=14 giorni. Qual è la durata attesa?", o: ["7 giorni", "6 giorni", "5,5 giorni", "21 giorni"], c: 1 },
+      { q: "In un progetto edilizio, la verniciatura delle pareti non può iniziare prima che l'intonaco sia completamente asciutto (3 giorni dopo il termine dell'intonacatura). Quale combinazione di legame e lag descrive correttamente questa situazione?", o: ["Legame SS con lag +3", "Legame FS con lag +3", "Legame FF con lead -3", "Legame SF con lag +3"], c: 1 },
+      { q: "Un'attività ha ES=3, EF=8, LS=6, LF=11. Qual è il Total Float e l'attività è critica?", o: ["TF=3, non critica", "TF=0, critica", "TF=5, non critica", "TF=2, non critica"], c: 0 },
+      { q: "Il PM di un progetto in ritardo decide di far partire il collaudo (testing) mentre lo sviluppo è ancora in corso, invece di aspettarne il completamento. Quale tecnica di compressione sta applicando e quale rischio introduce?", o: ["Crashing: rischio di aumento dei costi", "Fast Tracking: rischio di dover rifare il lavoro di collaudo se lo sviluppo cambia", "Rolling Wave Planning: rischio di scope creep", "Critical Path Method: nessun rischio aggiuntivo"], c: 1 },
+      { q: "In una schedulazione a risorse limitate, cosa succede se una risorsa è in sovraccarico (overallocation)?", o: ["Il PM deve eliminare le attività meno prioritarie", "Bisogna modificare la schedulazione per livellare il carico: spostando attività non critiche o aggiungendo risorse", "Il progetto viene automaticamente cancellato", "Lo Sponsor deve approvare straordinari illimitati"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 12 — Gestione delle Risorse",
+    title: "Modello attività-risorse, schedulazione e compressione",
+    qs: [
+      { q: "Un'attività ha Duration 10 giorni, lavoro 4 giorni/uomo e una risorsa assegnata. Qual è la percentuale di impiego (FTE) della risorsa?", o: ["100% (1 FTE)", "40% (0,4 FTE)", "25% (0,25 FTE)", "10% (0,1 FTE)"], c: 1 },
+      { q: "Durante la schedulazione a risorse limitate, l'istogramma mostra che una risorsa è in sovraccarico per 3 settimane. Qual è la prima azione corretta del PM?", o: ["Aumentare il budget per assumere un'altra risorsa", "Identificare le attività non critiche con float disponibile e spostarle per livellare il carico", "Cancellare le attività meno prioritarie dal progetto", "Chiedere alla risorsa di fare straordinari per tutta la durata del sovraccarico"], c: 1 },
+      { q: "Il Crashing e il Fast Tracking sono entrambe tecniche di compressione della schedulazione. Qual è la differenza principale tra i due?", o: ["Il Crashing riduce la qualità, il Fast Tracking riduce il budget", "Il Crashing aggiunge risorse sulle attività critiche aumentando i costi; il Fast Tracking mette attività in parallelo aumentando i rischi", "Il Crashing è applicabile solo alle attività critiche, il Fast Tracking solo alle attività non critiche", "Non vi è differenza sostanziale: entrambi aumentano costi e rischi allo stesso modo"], c: 1 },
+      { q: "Un PM deve ridurre la durata del progetto di 2 settimane a budget invariato. Quale tecnica è più appropriata?", o: ["Crashing: aggiungere risorse alle attività critiche", "Fast Tracking: sovrapporre attività originariamente in sequenza accettando il rischio aggiuntivo", "Aumentare il numero di milestone per accelerare le approvazioni", "Ridurre la qualità dei deliverable per risparmiare tempo"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 13 — Gestione dei Rischi",
+    title: "Identificazione, analisi e strategie di risposta ai rischi",
+    qs: [
+      { q: "Un progetto ha identificato il rischio 'il fornitore chiave potrebbe non consegnare in tempo'. A metà progetto il fornitore comunica un ritardo di 3 settimane. Il rischio è diventato:", o: ["Un'opportunità da sfruttare", "Un Problem/Issue: l'evento si è verificato e deve essere gestito come problema attuale", "Un rischio secondario generato dalla risposta al rischio principale", "Una contingency reserve da attivare"], c: 1 },
+      { q: "Un PM valuta un rischio con probabilità 30% e impatto economico di 50.000€. Qual è il Risk Exposure (valore atteso)?", o: ["80.000€", "50.000€", "15.000€", "30.000€"], c: 2 },
+      { q: "Il team decide di affidare a un fornitore esterno lo sviluppo di un modulo critico per ridurre il rischio tecnico. Quale strategia di risposta ai rischi negativi è stata scelta?", o: ["Evitare: eliminano la causa del rischio", "Mitigare: riducono la probabilità del rischio", "Trasferire: spostano le conseguenze su un terzo", "Accettare: non fanno nulla e attendono"], c: 2 },
+      { q: "Un rischio identificato non si è ancora verificato, ma il PM nota che le condizioni che lo potrebbero scatenare stanno aumentando. Qual è l'azione corretta?", o: ["Attendere che il rischio si verifichi per poi applicare il workaround", "Aggiornare il Risk Register e considerare azioni di mitigazione proattive prima che si verifichi", "Eliminare il rischio dal Risk Register perché non si è ancora verificato", "Trasferire automaticamente il rischio allo Sponsor"], c: 1 },
+      { q: "Qual è la differenza tra una Contingency Reserve e un Workaround?", o: ["La Contingency Reserve è per rischi positivi, il Workaround per rischi negativi", "La Contingency Reserve è pianificata in anticipo per rischi identificati; il Workaround è una risposta improvvisata a un rischio già verificatosi senza piano previsto", "Non vi è differenza: entrambi sono risorse economiche accantonate", "La Contingency Reserve è gestita dallo Sponsor, il Workaround dal team"], c: 1 },
+      { q: "Un'azienda sta sviluppando una tecnologia innovativa. Il PM suggerisce di realizzare un prototipo funzionante prima di avviare il progetto completo. Quale strategia di risposta al rischio è questa?", o: ["Trasferire il rischio tecnologico a un laboratorio esterno", "Evitare il rischio escludendo la tecnologia innovativa dallo scope", "Mitigare il rischio riducendo la probabilità di fallimento tecnologico tramite prototipazione", "Accettare il rischio e accantonare una riserva di contingency"], c: 2 },
+      { q: "La Risk Breakdown Structure (RBS) differisce dalla WBS perché:", o: ["La RBS è usata solo nei progetti IT, la WBS in tutti i tipi di progetto", "La RBS scompone gerarchicamente le fonti di rischio, non il lavoro da eseguire", "La RBS è redatta dallo Sponsor, la WBS dal PM", "La RBS si costruisce solo dopo la WBS e ne dipende gerarchicamente"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 14 — Gestione della Qualità",
+    title: "Principi di qualità, costo della qualità e strumenti",
+    qs: [
+      { q: "Un team di sviluppo aggiunge automaticamente una funzione di reportistica avanzata non richiesta dal cliente perché 'migliora il prodotto'. Qual è il problema?", o: ["Nessun problema: aggiungere valore è sempre positivo", "È Gold Plating: aggiunge funzionalità non richieste che consumano risorse senza essere state richieste, rischiando di compromettere tempi e costi", "È un esempio di eccellenza tecnica da incoraggiare sempre", "È accettabile solo se il costo aggiuntivo è inferiore al 5% del budget"], c: 1 },
+      { q: "Un PM scopre che molti difetti vengono trovati solo durante il collaudo finale, aumentando enormemente i costi di correzione. Quale principio di quality management avrebbe potuto prevenire questa situazione?", o: ["Gold Plating: aggiungere più funzionalità per coprire i difetti", "Il principio 'Prevenzione vs Controllo': inserire la qualità nella progettazione avrebbe ridotto il costo della correzione tardiva", "Benchmarking: confrontarsi con altri progetti avrebbe evidenziato il problema prima", "Aumentare il numero di controlli finali per trovare i difetti più velocemente"], c: 1 },
+      { q: "Il Benchmarking nel Quality Management ha lo scopo di:", o: ["Misurare la soddisfazione del cliente tramite questionari", "Confrontare le prassi adottate nel progetto con quelle di progetti interni o esterni presi come modello", "Calcolare il costo della non-qualità e delle rilavorazioni", "Verificare che tutti i deliverable rispettino le specifiche contrattuali"], c: 1 },
+      { q: "Perché 'prevenire' è generalmente più conveniente di 'correggere' nella gestione della qualità?", o: ["Perché la prevenzione non richiede risorse aggiuntive", "Perché il costo della prevenzione è in genere inferiore al costo della rilevazione e correzione dei difetti", "Perché la correzione richiede l'approvazione dello Sponsor", "Perché i difetti trovati in produzione non possono essere corretti"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 15 — Gestione degli Approvvigionamenti",
+    title: "Make or Buy Analysis e gestione dei fornitori",
+    qs: [
+      { q: "Un'azienda deve sviluppare un modulo software. Internamente ha le competenze, ma le risorse sono già impegnate su altri progetti critici. Secondo la Make or Buy Analysis, cosa dovrebbe fare?", o: ["Sempre sviluppare internamente per mantenere il know-how", "Valutare il Buy: acquistare esternamente è giustificato quando le risorse interne sono già saturate", "Posticipare il modulo a quando le risorse si libereranno", "Assumere nuove risorse indipendentemente dai costi"], c: 1 },
+      { q: "Nella Make or Buy Analysis, i 'costi indiretti' includono:", o: ["Il prezzo di acquisto del prodotto/servizio esterno", "I costi legati al processo di acquisto: ricerca fornitori, contrattazione, monitoraggio e gestione del rapporto", "Il costo delle risorse interne che avrebbero realizzato il prodotto", "Il costo di eventuali penali contrattuali"], c: 1 },
+      { q: "Secondo ISO 9001:2015, quando si acquista da fornitori esterni, l'azienda deve:", o: ["Fidarsi del fornitore senza controlli aggiuntivi se ha una buona reputazione", "Determinare criteri di valutazione, monitorare le prestazioni e assicurare la conformità ai requisiti", "Acquistare sempre dal fornitore più economico per rispettare il budget", "Limitarsi a verificare la consegna finale senza controlli intermedi"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 16 — Gestione dei Costi",
+    title: "Stima dei costi, riserve e determinazione del budget",
+    qs: [
+      { q: "A inizio progetto il PM stima un budget di 500.000€ con accuratezza ROM. Qual è l'intervallo realistico del costo finale?", o: ["Da 475.000€ a 525.000€", "Da 450.000€ a 550.000€", "Da 375.000€ a 875.000€", "Da 250.000€ a 750.000€"], c: 2 },
+      { q: "Il PM ha stimato un costo di 200.000€ per le attività. Ha aggiunto 20.000€ di Contingency Reserve per i rischi identificati. Qual è la Cost Baseline?", o: ["200.000€", "220.000€", "200.000€ + Management Reserve", "Dipende dal valore della Management Reserve"], c: 1 },
+      { q: "La Management Reserve è destinata a:", o: ["Coprire i rischi identificati nel Risk Register", "Gestire il lavoro imprevisto per rischi non identificati ('unknown-unknown'), non è inclusa nella Cost Baseline", "Pagare gli straordinari del team in caso di ritardo", "Finanziare le richieste di modifica approvate durante il progetto"], c: 1 },
+      { q: "La curva ad S nella gestione dei costi rappresenta:", o: ["L'andamento del rischio nel tempo", "L'andamento cumulativo della Cost Baseline nel tempo, tipicamente lenta all'inizio, rapida al centro, di nuovo lenta alla fine", "Il confronto tra costi pianificati e costi effettivi", "Il numero di attività completate per ogni periodo"], c: 1 },
+      { q: "Un PM riceve una stima di costo da un fornitore basata su un progetto simile realizzato 3 anni fa. Quale tipo di stima è e qual è il principale rischio?", o: ["Stima parametrica; rischio di sottostimare i costi di manodopera", "Stima per analogia; rischio che le differenze tra i due progetti non siano adeguatamente considerate", "Stima bottom-up; rischio di dimenticare alcune componenti di costo", "Stima definitiva; nessun rischio significativo data la base storica"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 17 — La Comunicazione",
+    title: "Communication Management, canali e best practice",
+    qs: [
+      { q: "Un team passa da 4 a 8 persone. Di quanto aumenta il numero di canali di comunicazione?", o: ["Da 6 a 28 canali: aumento di 22 canali", "Da 6 a 16 canali: aumento di 10 canali", "Da 4 a 8 canali: raddoppia esattamente", "Da 12 a 64 canali: aumenta proporzionalmente al quadrato"], c: 0 },
+      { q: "Un PM invia una email dettagliata con tutte le informazioni tecniche del progetto al CEO. Il CEO non risponde. Quale principio di comunicazione efficace è stato violato?", o: ["La chiarezza dello scopo della comunicazione", "La comprensione del destinatario: il CEO probabilmente preferisce report sintetici ad alto livello, non dettagli tecnici", "La misurazione dell'efficacia della comunicazione", "L'uso corretto dei canali formali di comunicazione"], c: 1 },
+      { q: "Durante una riunione di avanzamento, il PM nota che un membro chiave del team annuisce verbalmente ma ha le braccia conserte, evita il contatto visivo e parla con tono piatto. Cosa dovrebbe dedurre il PM?", o: ["Il membro è d'accordo perché ha annuito", "Potrebbe esserci un disaccordo non espresso: la comunicazione non verbale e para-verbale contraddicono quella verbale", "Il membro è semplicemente stanco e non c'è nulla da preoccuparsi", "L'accordo verbale è sufficiente: il linguaggio del corpo è irrilevante in contesto professionale"], c: 1 },
+      { q: "Quale affermazione sul Communication Management è corretta?", o: ["La comunicazione deve essere spontanea e non strutturata per risultare autentica", "La comunicazione efficace deve essere progettata, non improvvisata, e necessita di strumenti, competenze e una strategia chiara", "Il PM deve comunicare solo quando ci sono problemi da segnalare", "La comunicazione scritta formale è sempre più efficace di quella verbale in ogni contesto"], c: 1 },
+      { q: "Perché la comunicazione rappresenta circa il 90% del lavoro del PM?", o: ["Perché il PM non ha competenze tecniche e si limita a comunicare", "Perché il PM coordina persone e stakeholder diversi, e la capacità di comunicare influenza direttamente le performance del progetto", "Perché i sistemi informativi aziendali richiedono aggiornamenti continui", "Perché il 90% dei problemi di progetto sono causati da errori di documentazione"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 18 — La Pianificazione",
+    title: "Piano di Progetto: caratteristiche, struttura e contenuti",
+    qs: [
+      { q: "Un PM presenta un Piano di Progetto ottimistico con stime molto aggressive per ottenere l'approvazione dello Sponsor. Quale caratteristica fondamentale del Piano viene violata?", o: ["Formalizzato: il piano non è sufficientemente documentato", "Realistico: il piano deve basarsi su stime e risorse effettivamente disponibili, non su aspettative ottimistiche", "Condiviso: il piano non è stato comunicato al team", "Autorizzato: il piano richiede ulteriori approvazioni"], c: 1 },
+      { q: "Quale tra questi NON è un contenuto tipico del Piano di Progetto?", o: ["Work Breakdown Structure (WBS)", "Registro dei rischi", "Curriculum vitae del Project Manager", "Piano della comunicazione con gli stakeholder"], c: 2 },
+      { q: "Un Piano di Progetto approvato viene modificato senza seguire una procedura formale. Quale problema si crea?", o: ["Nessun problema se la modifica è piccola e approvata verbalmente dal PM", "Si perde il riferimento formale per il monitoraggio e il controllo: la baseline diventa inaffidabile", "Il piano aggiornato deve essere riapprovato solo se il costo cambia di più del 10%", "È sufficiente comunicare la modifica via email agli stakeholder principali"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 19 — Sicurezza delle Informazioni",
+    title: "Triade CIA, autenticazione, RPO e RTO",
+    qs: [
+      { q: "Un database aziendale viene modificato da un utente non autorizzato alterando i dati dei clienti. Quale principio CIA è stato violato?", o: ["Confidentiality: i dati sono stati esposti", "Integrity: i dati sono stati modificati in modo improprio compromettendo la loro correttezza", "Availability: i dati non sono più accessibili agli utenti autorizzati", "Authentication: il sistema di accesso non ha funzionato"], c: 1 },
+      { q: "Un sistema bancario deve essere ripristinato entro 2 ore da un'interruzione e non può perdere nemmeno una transazione. Quale coppia di indicatori descrive questi requisiti?", o: ["RTO = 0, RPO = 2 ore", "RTO = 2 ore, RPO = 0 (nessuna transazione persa)", "RTO = 2 ore, RPO = 2 ore", "RPO = 0, RTO = 0"], c: 1 },
+      { q: "Il principio del 'least privilege' (privilegio minimo) è una misura di sicurezza che garantisce:", o: ["Che tutti gli utenti possano accedere a tutte le informazioni in caso di emergenza", "Che ogni utente acceda solo alle informazioni strettamente necessarie per svolgere il proprio lavoro", "Che le password vengano cambiate ogni 30 giorni", "Che tutti i dati siano crittografati in transito e a riposo"], c: 1 },
+      { q: "Un dipendente accede al sistema aziendale inserendo la password e poi confermando tramite un codice OTP inviato al suo telefono. Questa è:", o: ["Single factor authentication: entrambi i fattori sono 'knowledge'", "Two factor authentication (MFA): combina 'knowledge' (password) e 'ownership' (telefono)", "Biometric authentication: usa caratteristiche fisiche dell'utente", "Node authentication: identifica il dispositivo dell'utente"], c: 1 },
+      { q: "Un'azienda manifatturiera produce 1.000 pezzi al giorno. Il sistema di tracciamento registra i dati ogni 500 pezzi. In caso di guasto, quanti pezzi al massimo potrebbero essere 'persi' nei dati? Quale indicatore descrive questa tolleranza?", o: ["RTO = 500 pezzi: il sistema deve ripristinarsi entro 500 pezzi prodotti", "RPO = 499 pezzi: la quantità massima di dati (pezzi non registrati) che si accetta di perdere", "RPO = 1.000 pezzi: l'intera produzione giornaliera è a rischio", "RTO = 499 pezzi: il tempo di ripristino è espresso in pezzi prodotti"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 20 — Changeover",
+    title: "Tecniche di transizione tra sistemi: parallelo, per fasi e immediato",
+    qs: [
+      { q: "Un'azienda sostituisce il suo ERP. Decide di mantenere entrambi i sistemi attivi per 3 mesi, confrontando i risultati. Quale metodo di Changeover sta usando e qual è il vantaggio principale?", o: ["Changeover Immediato: vantaggio di velocità e semplicità", "Changeover Parallelo: vantaggio di poter verificare il nuovo sistema prima di dismettere il vecchio, minimizzando il rischio", "Changeover per Fasi: vantaggio di sostituire un modulo alla volta", "Fallback: vantaggio di poter tornare al vecchio sistema in qualsiasi momento"], c: 1 },
+      { q: "Un'azienda migra il sistema di gestione delle HR per fasi: prima i dati anagrafici, poi le buste paga, poi i permessi. Quale svantaggio tipico del Changeover per Fasi potrebbe emergere?", o: ["Il rischio che entrambi i sistemi siano offline contemporaneamente", "Difficoltà nel mantenere la coerenza dei dati tra i moduli vecchi e nuovi ancora attivi contemporaneamente", "Il costo eccessivo dovuto alla necessità di tenere due sistemi identici in parallelo", "L'impossibilità di tornare al sistema precedente in caso di problemi"], c: 1 },
+      { q: "Il Changeover Immediato (Abrupt) è preferito quando:", o: ["Il sistema è mission-critical e qualsiasi downtime è inaccettabile", "Il rollback è relativamente garantito o l'impatto di un'interruzione delle attività è minimo", "Il nuovo sistema è molto diverso dal precedente e richiede una lunga formazione", "L'azienda ha budget sufficiente per mantenere due sistemi contemporaneamente"], c: 1 },
+      { q: "Cosa sono le 'Fallback Procedures' (procedure di rollback) e perché sono essenziali?", o: ["Sono procedure per accelerare il go-live del nuovo sistema in caso di ritardi", "Sono attività da eseguire per tornare allo stato precedente se il nuovo sistema non funziona come previsto, garantendo la continuità operativa", "Sono procedure di backup dei dati da eseguire prima di ogni changeover", "Sono linee guida per la formazione del personale sul nuovo sistema"], c: 1 },
+      { q: "Per quale tipo di Changeover è ancora più importante che tutte le attività siano pianificate con cura e realizzate in anticipo rispetto agli altri metodi?", o: ["Changeover Parallelo, perché entrambi i sistemi devono essere sincronizzati", "Changeover per Fasi, perché ogni modulo richiede una pianificazione separata", "Changeover Immediato, perché non c'è possibilità di correzione graduale: o funziona o si torna indietro", "Fallback, perché è la procedura più complessa da implementare"], c: 2 },
+    ]
+  },
+  {
+    chip: "Cap. 21 — La Baseline",
+    title: "Ciclo di pianificazione, Project Information Sets e tipi di baseline",
+    qs: [
+      { q: "A metà progetto il PM scopre che la baseline originale era basata su stime troppo ottimistiche. Può aggiornarla liberamente?", o: ["Sì, il PM può aggiornarla quando lo ritiene opportuno", "No, la baseline può essere revisionata esclusivamente attraverso procedure formali di controllo delle modifiche", "Sì, ma solo se lo Sponsor non se ne accorge", "No, la baseline non può mai essere modificata una volta approvata"], c: 1 },
+      { q: "Qual è la differenza tra la 'Baseline Iniziale' e la 'Baseline di Monitoraggio e Controllo'?", o: ["Sono la stessa cosa: la baseline non cambia mai durante il progetto", "La Baseline Iniziale stabilisce l'impegno tra PM e committente; la Baseline di Controllo è una delle fotografie successive con cui si confronta lo stato corrente", "La Baseline di Controllo include solo i costi, quella Iniziale include tutto", "La Baseline Iniziale è redatta dallo Sponsor, quella di Controllo dal PM"], c: 1 },
+      { q: "Un progetto ha completato la pianificazione. Il PM ha definito WBS, Schedule e Cost Baseline. Come si chiama l'insieme integrato di queste tre baseline?", o: ["Project Charter", "Project Information Set", "Performance Measurement Baseline (PMB)", "Project Status Report"], c: 2 },
+      { q: "Il Project Charter e il Project Plan contengono informazioni diverse. Quale affermazione è corretta?", o: ["Il Charter contiene la WBS dettagliata, il Plan solo gli obiettivi generali", "Il Charter contiene obiettivi, stakeholder, vincoli e stime iniziali; il Plan aggiunge WBS, schedule, rischi dettagliati, qualità e comunicazione", "Sono documenti equivalenti con le stesse informazioni a livelli di dettaglio diversi", "Il Plan sostituisce completamente il Charter una volta approvato"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 22 — Kick-off Meeting",
+    title: "Obiettivi, struttura e importanza della riunione di avvio",
+    qs: [
+      { q: "Perché il Kick-off Meeting è considerato un momento cruciale anche per progetti piccoli?", o: ["Perché è l'occasione per negoziare il budget finale con lo Sponsor", "Perché permette di condividere il Piano, motivare il team, chiarire ruoli e responsabilità e creare un clima positivo verso gli obiettivi comuni", "Perché è l'unica occasione in cui il cliente può modificare i requisiti del progetto", "Perché senza il Kick-off il progetto non può essere avviato legalmente"], c: 1 },
+      { q: "Al termine del Kick-off Meeting, un membro del team dichiara di non aver capito quale sia il suo ruolo specifico. Cosa è andato storto?", o: ["Il PM non ha invitato le persone giuste alla riunione", "Uno degli obiettivi fondamentali del Kick-off — chiarire ruoli, compiti e responsabilità di ciascun partecipante — non è stato raggiunto", "Il membro del team avrebbe dovuto leggere il Piano prima della riunione", "Non è andato storto nulla: i ruoli si chiariscono durante l'esecuzione"], c: 1 },
+      { q: "La struttura del Kick-off Meeting segue:", o: ["L'ordine di priorità degli stakeholder, dal più importante al meno importante", "I capitoli del Piano di Progetto: obiettivi, deliverable, stakeholder, WBS, schedulazione, rischi, comunicazione ecc.", "Un formato libero deciso dal PM in base alle esigenze del momento", "Le fasi del ciclo di vita del progetto in ordine cronologico"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 23–24 — Esecuzione e Project Manager",
+    title: "Processi di esecuzione, competenze e stili di leadership",
+    qs: [
+      { q: "Un PM gestisce un team di ricercatori senior altamente specializzati e motivati. Quale stile di leadership è più appropriato?", o: ["Leadership Autoritaria: serve controllo stretto su professionisti tecnici", "Leadership Laissez-faire: il team è capace e motivato, può auto-organizzarsi con supervisione minima", "Leadership Carismatica: serve ispirare il team con grande energia", "Leadership Democratica: ogni decisione deve essere votata dal team"], c: 1 },
+      { q: "Un PM in un progetto Agile viene descritto come qualcuno che 'serve il team prima di guidarlo'. A quale stile di leadership corrisponde?", o: ["Leadership Autoritaria", "Leadership Laissez-faire", "Servant Leader: si concentra sulla crescita, l'autonomia e il benessere del team", "Leadership Interazionale"], c: 2 },
+      { q: "Quale delle seguenti affermazioni descrive correttamente la Leadership Interazionale?", o: ["Si delega tutto senza intervento diretto del leader", "Il leader emette ordini unidirezionali senza raccogliere feedback", "Massima attenzione sia ai risultati sia alle persone, gestione del conflitto, ascolto attivo e responsabilità collettiva", "Il leader ispira il team con carisma ed entusiasmo personale"], c: 2 },
+      { q: "Un PM ha eccellenti competenze tecniche ma fatica a comunicare le priorità alla direzione e a negoziare con gli stakeholder. In quale area delle competenze PM ha lacune?", o: ["Project Management Tecnico", "Gestione Aziendale e Strategica", "Leadership e competenze interpersonali", "Conoscenza degli standard internazionali di PM"], c: 2 },
+      { q: "Quale principio fondamentale accomuna tutti i tipi di progetto secondo il PMBOK riguardo alle risorse umane?", o: ["Le persone sono risorse numerabili e intercambiabili", "Un comune denominatore in tutti i progetti sono le persone, che possono essere contate ma non sono numeri", "Le competenze tecniche del team sono sempre più importanti delle competenze relazionali del PM", "Il team ideale è composto da persone che non si conoscono per evitare conflitti di interesse"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 25 — Team Building",
+    title: "Scopo, elementi e benefici del Team Building",
+    qs: [
+      { q: "Un team di progetto è tecnicamente competente ma i membri lavorano in silos, non comunicano tra loro e si incolpano a vicenda per i ritardi. Quale attività il PM dovrebbe prioritizzare?", o: ["Sostituire i membri meno performanti con risorse esterne", "Avviare attività di Team Building per costruire fiducia, comunicazione e spirito di squadra", "Aumentare i controlli individuali su ogni membro del team", "Ridurre il numero di attività parallele per semplificare il coordinamento"], c: 1 },
+      { q: "Quale tra questi NON è un elemento che il Team Building mira a sviluppare?", o: ["Fiducia reciproca e integrazione del team", "Capacità di gestire lo stress e le scadenze", "Competenze tecniche specifiche del settore", "Miglioramento delle capacità di problem solving collettivo"], c: 2 },
+    ]
+  },
+  {
+    chip: "Cap. 26 — Monitoraggio e Controllo",
+    title: "Data Date, periodi di avanzamento e best practice",
+    qs: [
+      { q: "Un PM riceve i dati di avanzamento dal team ogni mese, ma il periodo di consolidamento è di 4 settimane. Quando presenta il report alla direzione, i dati hanno già 3 settimane. Quale problema si crea?", o: ["Nessun problema: un mese è il periodo massimo raccomandato", "I dati sono troppo vecchi per permettere azioni correttive tempestive: il sistema di reporting non rispetta le best practice", "È normale: la direzione non ha bisogno di dati in tempo reale", "Il problema è dello Sponsor che dovrebbe chiedere report più frequenti"], c: 1 },
+      { q: "Perché 'la pianificazione invecchia rapidamente' è considerata una best practice nel monitoraggio?", o: ["Perché il PM deve sempre fare nuove stime per giustificare il suo lavoro", "Perché il piano viene continuamente aggiornato con i dati reali e le previsioni riviste, altrimenti diventa inutile come strumento di controllo", "Perché lo Sponsor cambia spesso gli obiettivi durante il progetto", "Perché le risorse del team cambiano frequentemente durante l'esecuzione"], c: 1 },
+      { q: "Cosa deve fare il PM durante il periodo di consolidamento?", o: ["Solo raccogliere i dati dal team senza analizzarli", "Analizzare risultati, tempi, costi e criticità; produrre la nuova pianificazione; condividerla con il team e avvisare la direzione", "Aspettare che i problemi si risolvano da soli prima di aggiornarli nel piano", "Modificare la baseline per allinearla ai dati effettivi senza procedure formali"], c: 1 },
+      { q: "Il termine 'Controllo' nel Project Management significa:", o: ["Sorvegliare il comportamento del team e sanzionare chi non rispetta le regole", "Osservare e regolare l'andamento dei parametri del progetto (costi, tempi, scope) per mantenerli allineati al piano", "Approvare formalmente ogni deliverable prima che il team possa procedere", "Verificare che il team rispetti gli orari di lavoro contrattualmente previsti"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 27 — Earned Value Management",
+    title: "PV, AC, EV, varianze, indici e tecniche di calcolo",
+    qs: [
+      { q: "Un progetto ha BAC=100.000€, dopo 6 mesi PV=60.000€, AC=70.000€, EV=45.000€. Il progetto è:", o: ["In anticipo sui tempi e sotto i costi", "In anticipo sui tempi e sopra i costi", "In ritardo sui tempi e sotto i costi", "In ritardo sui tempi e sopra i costi: SV=-15.000€ e CV=-25.000€"], c: 3 },
+      { q: "Con i dati dell'esercizio precedente (EV=45.000€, PV=60.000€, AC=70.000€), qual è il CPI e cosa significa?", o: ["CPI=0,75 → ogni euro speso produce 0,75€ di valore: il progetto sta sforando il budget", "CPI=1,33 → il progetto sta risparmiando rispetto al budget", "CPI=0,64 → ogni euro speso produce 0,64€ di valore: il progetto sta sforando il budget", "CPI=1,56 → il progetto è molto efficiente sui costi"], c: 2 },
+      { q: "Il PM deve misurare l'avanzamento di un'attività di testing che durerà 4 mesi e prevede 4 cicli di test, uno al mese. Quale tecnica EVM è più appropriata?", o: ["Level of Effort (LOE): l'EV è automaticamente uguale al PV", "Fixed Formula 50/50: metà all'inizio e metà alla fine", "Weighted Milestone: assegna valore al completamento di ogni ciclo di test (milestone)", "Percent Complete soggettivo stimato dal team"], c: 2 },
+      { q: "Un'attività di Project Management (riunioni, reporting, coordinamento) deve essere misurata con l'EVM. Quale tecnica è più appropriata e perché?", o: ["Weighted Milestone: produce output chiari e misurabili", "Level of Effort (LOE): non produce output tangibili direttamente misurabili, quindi l'EV viene automaticamente accreditato pari al PV", "Fixed Formula 0/100: si misura solo al completamento", "Percent Complete: il PM stima la percentuale di lavoro completato"], c: 1 },
+      { q: "Alla fine del progetto, SPI converge sempre verso 1 indipendentemente dai ritardi accumulati. Qual è l'implicazione pratica?", o: ["L'SPI è l'indicatore più affidabile per valutare l'efficienza complessiva del progetto", "L'SPI perde significato verso la fine del progetto: il CPI è un indicatore più stabile e predittivo del costo finale", "Significa che tutti i progetti recuperano i ritardi verso la fine", "L'SPI finale uguale a 1 significa che il progetto è stato consegnato in tempo"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 28 — Reportistica",
+    title: "Tipi di report, strumenti e Project Information Sets",
+    qs: [
+      { q: "Il PM presenta al CEO un grafico con sole 5 milestone e le date previste vs effettive. Che tipo di report è e perché è appropriato?", o: ["Report Assoluto: fotografa lo stato attuale senza confronti", "Piano delle Milestone: strumento di reportistica direzionale che fornisce una visione sintetica ad alto livello, ideale per il top management", "P-Chart: mostra l'andamento dei costi a finire nel tempo", "Report di Trend: mostra l'evoluzione degli indici nel tempo"], c: 1 },
+      { q: "Un PM nota che le stime dei costi a finire (ETC) sono aumentate di settimana in settimana negli ultimi 2 mesi. Quale strumento di reporting visualizza meglio questo trend preoccupante?", o: ["Piano delle Milestone: mostra i traguardi su una timeline", "Treemap: mostra la distribuzione dei costi per componente", "P-Chart: mostra l'andamento crescente dei costi a finire nel tempo, evidenziando il trend negativo", "Report Assoluto: fotografa la situazione attuale"], c: 2 },
+      { q: "Qual è la frequenza massima raccomandata per il periodo di reporting e perché?", o: ["Una settimana: per avere dati sempre aggiornati in tempo reale", "Un mese: per dare tempo al team di produrre dati significativi e al PM di implementare azioni correttive prima del prossimo report", "Un trimestre: per non sovraccaricare il team con attività amministrative", "Due settimane: è il periodo ideale per qualsiasi tipo di progetto"], c: 1 },
+      { q: "Un Treemap viene usato per mostrare la distribuzione del budget tra le 8 aree funzionali del progetto. Quale caratteristica del Treemap rende immediatamente chiaro quale area consuma più risorse?", o: ["Il colore di ogni rettangolo: più scuro significa più costo", "L'area di ogni rettangolo è proporzionale al valore rappresentato: l'area più grande corrisponde alla voce più costosa", "La posizione del rettangolo: in alto a sinistra = maggior costo", "Il numero indicato dentro ogni rettangolo, che mostra la percentuale del budget"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 29 — Chiusura del Progetto",
+    title: "Processi di chiusura, lesson learned e riunione finale",
+    qs: [
+      { q: "Il cliente ha ricevuto tutti i deliverable ma il PM non ha ancora formalizzato la chiusura del progetto. Quali rischi concreti comporta questa situazione?", o: ["Nessun rischio: se i deliverable sono consegnati il progetto è di fatto chiuso", "Le risorse del team rimangono bloccate, i contratti con i fornitori restano aperti e le lesson learned non vengono documentate per i progetti futuri", "Il rischio è solo formale: basta un'email di chiusura al cliente", "Il rischio è che il cliente possa richiedere ulteriori deliverable non previsti"], c: 1 },
+      { q: "Perché le Lesson Learned sono considerate uno dei principali benefici del processo di chiusura?", o: ["Perché obbligano il cliente a valutare positivamente il progetto", "Perché documentano ciò che ha funzionato e ciò che non ha funzionato, creando un patrimonio di conoscenza che migliora i progetti futuri", "Perché permettono al PM di giustificare i ritardi e i costi extra", "Perché sono un requisito legale obbligatorio per chiudere i contratti"], c: 1 },
+      { q: "Quale affermazione descrive correttamente il ruolo del PMO nella chiusura del progetto?", o: ["Il PMO sostituisce il PM nella gestione della riunione di chiusura", "Il PMO rivede le procedure e i template usati nel progetto, raccoglie e diffonde le lesson learned a tutta l'organizzazione", "Il PMO si occupa solo di chiudere i contratti con i fornitori esterni", "Il PMO non ha un ruolo specifico nella fase di chiusura"], c: 1 },
+      { q: "Durante la riunione di chiusura, il PM elenca solo i successi del progetto evitando di menzionare i problemi. Perché questo approccio è sbagliato?", o: ["Perché lo Sponsor potrebbe essere presente e rimanere deluso", "Perché l'obiettivo della riunione è il miglioramento continuo: identificare anche le aree di miglioramento è essenziale per fare lesson learned genuine e utili", "Perché il cliente potrebbe usare le informazioni negative contro l'azienda", "Non è sbagliato: è corretto concentrarsi sui successi per motivare il team"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 30 — Metodologie Agili e Scrum",
+    title: "Manifesto Agile, MVP, framework Scrum e suoi elementi",
+    qs: [
+      { q: "Un'azienda sviluppa un software con requisiti che cambiano frequentemente in base al feedback degli utenti. Quale approccio è più adatto?", o: ["Waterfall: tutti i requisiti vengono definiti all'inizio e il software consegnato alla fine", "Agile/Scrum: i requisiti emergono progressivamente, si consegna valore in modo continuo e i cambiamenti sono benvenuti", "Un approccio R&D: adatto solo a progetti di ricerca pura", "Nessuno dei due: bisogna aspettare che i requisiti si stabilizzino prima di iniziare"], c: 1 },
+      { q: "Il Product Owner di un progetto Scrum riceve pressioni da tre diversi stakeholder per prioritizzare elementi diversi del Product Backlog. Come deve gestire la situazione?", o: ["Lascia che gli stakeholder votino democraticamente la priorità degli elementi", "Delega la decisione allo Scrum Master che ha più esperienza di processo", "Decide autonomamente la prioritizzazione massimizzando il valore del prodotto, essendo l'unico responsabile del Product Backlog", "Porta la questione al team di sviluppo per una decisione tecnica"], c: 2 },
+      { q: "Uno Sprint è terminato ma l'Incremento non soddisfa la Definition of Done per 3 user story. Come si gestisce in Scrum?", o: ["Le 3 user story vengono dichiarate complete lo stesso e mostrate nella Sprint Review", "Le 3 user story non vengono incluse nell'Incremento: tornano nel Product Backlog e vengono rivalutate per il prossimo Sprint", "Lo Sprint viene prolungato finché tutte le user story soddisfano la Definition of Done", "Lo Scrum Master decide caso per caso se accettare le user story incomplete"], c: 1 },
+      { q: "Cosa distingue la Sprint Review dalla Sprint Retrospective?", o: ["La Review analizza il processo di lavoro del team; la Retrospective mostra il prodotto agli stakeholder", "La Review ispeziona l'Incremento con gli stakeholder; la Retrospective è interna al team e analizza come migliorare il processo di lavoro", "Sono lo stesso evento con due nomi diversi", "La Review è opzionale; la Retrospective è obbligatoria"], c: 1 },
+      { q: "Un team Scrum completa sempre meno story point ad ogni Sprint. Il Burndown Chart mostra una linea effettiva che rimane piatta invece di scendere. Cosa indica questa situazione?", o: ["Il team sta andando molto bene: il lavoro rimanente non aumenta", "Il team ha problemi o impedimenti: il lavoro non viene completato e lo Sprint Goal è a rischio", "È normale nelle prime settimane di un nuovo progetto", "Significa che il Product Backlog è stato stimato male inizialmente"], c: 1 },
+      { q: "Perché Scrum viene definito 'difficile da padroneggiare' pur essendo 'semplice da comprendere'?", o: ["Perché richiede competenze tecniche molto avanzate", "Perché i concetti base sono intuitivi ma applicarli con disciplina, trasparenza e miglioramento continuo in contesti reali richiede pratica e maturità organizzativa", "Perché la documentazione di Scrum è molto complessa e lunga", "Perché ogni azienda usa una versione diversa di Scrum"], c: 1 },
+      { q: "Un'azienda vuole adottare Scrum ma il management continua a chiedere piani dettagliati a 12 mesi con stime precise. Quale ruolo Scrum dovrebbe aiutare l'organizzazione a capire perché questo contrasta con i principi Agile?", o: ["Il Product Owner: spiega le priorità del backlog", "Il Team di Sviluppo: spiega le stime tecniche", "Lo Scrum Master: guida e assiste l'organizzazione nell'adozione di Scrum, aiutandola a capire e applicare correttamente il framework", "Il Project Manager tradizionale: fa da ponte tra i due approcci"], c: 2 },
+    ]
+  }
+];
+
+const allQ = [];
+sections.forEach(s => s.qs.forEach(q => allQ.push({ ...q })));
+const TOTAL = allQ.length;
+let answers = Array(TOTAL).fill(null);
+
+function build() {
+  const body = document.getElementById("quiz-body");
+  body.innerHTML = "";
+  let gi = 0;
+  sections.forEach(sec => {
+    const sh = document.createElement("div");
+    sh.className = "sec-head";
+    sh.innerHTML = `<div class="sec-chip">${sec.chip}</div><div class="sec-title">${sec.title}</div>`;
+    body.appendChild(sh);
+    const wrap = document.createElement("div");
+    wrap.className = "cards";
+    sec.qs.forEach(() => {
+      const i = gi;
+      const q = allQ[i];
+      const card = document.createElement("div");
+      card.className = "qcard";
+      card.innerHTML = `
+        <div class="qnum">Domanda ${i+1} di ${TOTAL}</div>
+        <div class="qtext">${q.q}</div>
+        ${q.o.map((op, j) => `
+          <div class="opt" id="o-${i}-${j}" onclick="pick(${i},${j})">
+            <input type="radio" name="q${i}">
+            <div class="opt-l">${String.fromCharCode(65+j)}</div>
+            <label>${op}</label>
+          </div>`).join("")}
+      `;
+      wrap.appendChild(card);
+      gi++;
+    });
+    body.appendChild(wrap);
+  });
+}
+
+function pick(qi, oi) {
+  answers[qi] = oi;
+  for (let j = 0; j < allQ[qi].o.length; j++)
+    document.getElementById(`o-${qi}-${j}`).classList.remove("selected");
+  document.getElementById(`o-${qi}-${oi}`).classList.add("selected");
+  const done = answers.filter(a => a !== null).length;
+  document.getElementById("prog-fill").style.width = (done/TOTAL*100) + "%";
+  document.getElementById("prog-count").textContent = `${done} / ${TOTAL}`;
+  document.getElementById("s-done").textContent = done;
+  document.getElementById("submit-btn").disabled = done < TOTAL;
+}
+
+function submitQuiz() {
+  let score = 0;
+  const wrong = [];
+  allQ.forEach((q, i) => {
+    const c = q.c, ch = answers[i];
+    for (let j = 0; j < q.o.length; j++) {
+      const el = document.getElementById(`o-${i}-${j}`);
+      el.style.pointerEvents = "none";
+      if (j === c) el.classList.add("correct");
+      else if (j === ch) el.classList.add("wrong");
+    }
+    if (ch === c) score++;
+    else wrong.push({ n: i+1, q: q.q, y: q.o[ch], c: q.o[c] });
+  });
+
+  document.getElementById("submit-btn").style.display = "none";
+  const pct = Math.round(score / TOTAL * 100);
+  const circle = document.getElementById("res-circle");
+  circle.textContent = pct + "%";
+  circle.className = "res-circle " + (pct >= 70 ? "rg" : pct >= 50 ? "rm" : "rb");
+  document.getElementById("res-title").textContent = pct >= 80 ? "🎉 Ottimo risultato!" : pct >= 60 ? "👍 Quasi, puoi migliorare!" : "📚 Ripassia ancora un po'!";
+  document.getElementById("res-sub").textContent = `Quiz 2 Completo · ${score}/${TOTAL} risposte corrette`;
+  document.getElementById("rs-ok").textContent = score;
+  document.getElementById("rs-no").textContent = TOTAL - score;
+  document.getElementById("rs-pct").textContent = pct + "%";
+  document.getElementById("result").style.display = "block";
+  document.getElementById("result").scrollIntoView({ behavior: "smooth" });
+  buildErrors(wrong);
+  fetchFeedback(score, pct, wrong);
+}
+
+function buildErrors(wrong) {
+  const box = document.getElementById("errors-box");
+  if (wrong.length === 0) {
+    box.innerHTML = "<div class=\"no-errors\">✅ Perfetto! Nessun errore commesso.</div>";
+    return;
+  }
+  let html = `<div class="errors-title">❌ Risposte errate (${wrong.length})</div>`;
+  wrong.forEach(w => {
+    html += `
+      <div class="err-item">
+        <div class="err-num">Domanda ${w.n}</div>
+        <div class="err-question">${w.q}</div>
+        <div class="err-row"><span class="err-badge wb">Tua risposta</span><span class="err-answer">${w.y}</span></div>
+        <div class="err-row"><span class="err-badge cb">Risposta corretta</span><span class="err-answer ca">${w.c}</span></div>
+      </div>`;
+  });
+  box.innerHTML = html;
+}
+
+async function fetchFeedback(score, pct, wrong) {
+  const weakSections = {};
+  wrong.forEach(w => {
+    const idx = w.n - 1;
+    let gi = 0;
+    for (const sec of sections) {
+      for (let qi = 0; qi < sec.qs.length; qi++) {
+        if (gi === idx) {
+          weakSections[sec.chip] = (weakSections[sec.chip] || 0) + 1;
+        }
+        gi++;
+      }
+    }
+  });
+  const weak = Object.entries(weakSections).sort((a,b) => b[1]-a[1]).slice(0,4).map(([k,v]) => `${k} (${v} errori)`).join(", ");
+
+  const prompt = `Sei un professore di Project Management. Uno studente ha completato il Quiz 2 completo del corso (117 domande situazionali su tutti i 30 capitoli: definizioni, WBS, schedulazione, CPM, risk management, qualità, costi, comunicazione, sicurezza, changeover, baseline, EVM, reportistica, chiusura e Scrum) ottenendo ${score}/${TOTAL} (${pct}%).
+
+Aree più deboli: ${weak || "nessuna area particolarmente debole"}.
+
+Scrivi un feedback motivante di 5-6 righe in italiano: commenta il risultato, identifica le aree su cui concentrarsi e dai un consiglio pratico per l'esame. Sii diretto e incoraggiante.`;
+
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [{ role: "user", content: prompt }] })
+    });
+    const d = await r.json();
+    document.getElementById("fb-text").textContent = d.content?.find(b => b.type === "text")?.text || "Feedback non disponibile.";
+  } catch { document.getElementById("fb-text").textContent = "Feedback non disponibile al momento."; }
+}
+
+function resetQuiz() {
+  answers = Array(TOTAL).fill(null);
+  document.getElementById("result").style.display = "none";
+  document.getElementById("submit-btn").style.display = "block";
+  document.getElementById("submit-btn").disabled = true;
+  document.getElementById("prog-fill").style.width = "0%";
+  document.getElementById("prog-count").textContent = `0 / ${TOTAL}`;
+  document.getElementById("s-done").textContent = "0";
+  build();
+  window.scrollTo(0, 0);
+}
+
+build();
+</script>
+</body>
+</html>
