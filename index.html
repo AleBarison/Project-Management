@@ -9,26 +9,35 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Inter', sans-serif; background: #0b0d14; color: #e8eaf0; min-height: 100vh; padding: 40px 24px; }
   h1 { text-align: center; font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
-  p { text-align: center; color: #6b7280; margin-bottom: 40px; }
+  .sub { text-align: center; color: #6b7280; margin-bottom: 16px; }
+  .section-label { max-width: 860px; margin: 32px auto 12px; font-size: 0.72rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #252a3a; padding-bottom: 8px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; max-width: 860px; margin: 0 auto; }
   a { display: block; background: #13161f; border: 1px solid #252a3a; border-radius: 14px; padding: 24px; text-decoration: none; color: inherit; transition: all 0.2s; }
-  a:hover { border-color: #6366f1; transform: translateY(-3px); }
+  a:hover { border-color: #6366f1; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
   .icon { font-size: 2rem; margin-bottom: 12px; }
   .tag { font-size: 0.7rem; font-weight: 600; color: #6366f1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
   .title { font-size: 1rem; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
   .desc { font-size: 0.82rem; color: #6b7280; line-height: 1.5; }
+  .pill { display: inline-block; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc; font-size: 0.68rem; font-weight: 600; padding: 2px 10px; border-radius: 99px; margin-top: 10px; }
 </style>
 </head>
 <body>
 <h1>📋 PM Academy</h1>
-<p>Tutti i quiz di Project Management – Prof.ssa Bellotto A.A. 2025/2026</p>
+<p class="sub">Quiz di Project Management – Prof.ssa Bellotto · A.A. 2025/2026</p>
+
+<div class="section-label">🏆 Quiz Completi – Tutto il corso</div>
 <div class="grid">
-  <a href="Quiz_1_PM_Completo.html"><div class="icon">🏆</div><div class="tag">Quiz Completo 1</div><div class="title">Quiz 1 – Corso Completo</div><div class="desc">78 domande su tutti gli argomenti del corso.</div></a>
-  <a href="Quiz_2_Completo.html"><div class="icon">🥇</div><div class="tag">Quiz Completo 2</div><div class="title">Quiz 2 – Corso Completo</div><div class="desc">117 domande situazionali su tutti i 30 capitoli.</div></a>
-  <a href="Quiz_3_Completo.html"><div class="icon">🎯</div><div class="tag">Quiz Completo 3</div><div class="title">Quiz 3 – Corso Completo</div><div class="desc">60 domande nuove su tutti i 30 capitoli.</div></a>
-  <a href="quiz_cap1-11.html"><div class="icon">📖</div><div class="tag">Cap. 1–11</div><div class="title">Fondamenti e Schedulazione</div><div class="desc">Definizioni, ruoli, WBS, CPM e stime.</div></a>
-  <a href="quiz_cap12-20.html"><div class="icon">⚠️</div><div class="tag">Cap. 12–20</div><div class="title">Rischi, Qualità e Costi</div><div class="desc">Risk management, qualità, procurement e costi.</div></a>
-  <a href="quiz_cap21-30.html"><div class="icon">📊</div><div class="tag">Cap. 21–30</div><div class="title">EVM, Chiusura e Scrum</div><div class="desc">Baseline, EVM, reportistica, chiusura e Agile.</div></a>
+  <a href="PM_Academy.html"><div class="icon">🎓</div><div class="tag">App Completa</div><div class="title">PM Academy</div><div class="desc">Tutti i quiz in un'unica app con punteggi salvati e navigazione completa.</div><span class="pill">10 quiz</span></a>
+  <a href="Quiz_1_PM_Completo.html"><div class="icon">🏆</div><div class="tag">Quiz Completo 1</div><div class="title">Quiz 1 – Corso Completo</div><div class="desc">78 domande su tutti gli argomenti del corso.</div><span class="pill">78 domande</span></a>
+  <a href="Quiz_2_Completo.html"><div class="icon">🥇</div><div class="tag">Quiz Completo 2</div><div class="title">Quiz 2 – Situazionale</div><div class="desc">117 domande situazionali su tutti i 30 capitoli.</div><span class="pill">117 domande</span></a>
+  <a href="Quiz_3_Completo.html"><div class="icon">🎯</div><div class="tag">Quiz Completo 3</div><div class="title">Quiz 3 – Corso Completo</div><div class="desc">60 domande nuove su tutti i 30 capitoli.</div><span class="pill">60 domande</span></a>
+</div>
+
+<div class="section-label">📚 Quiz per Sezione</div>
+<div class="grid">
+  <a href="quiz_cap1-11.html"><div class="icon">📖</div><div class="tag">Cap. 1–11</div><div class="title">Fondamenti e Schedulazione</div><div class="desc">Definizioni, ruoli, WBS, CPM e stime della durata.</div><span class="pill">42 domande</span></a>
+  <a href="quiz_cap12-20.html"><div class="icon">⚠️</div><div class="tag">Cap. 12–20</div><div class="title">Rischi, Qualità e Costi</div><div class="desc">Risk management, qualità, procurement, costi e sicurezza.</div><span class="pill">40 domande</span></a>
+  <a href="quiz_cap21-30.html"><div class="icon">📊</div><div class="tag">Cap. 21–30</div><div class="title">EVM, Chiusura e Scrum</div><div class="desc">Baseline, EVM, reportistica, chiusura e Agile/Scrum.</div><span class="pill">40 domande</span></a>
 </div>
 </body>
 </html>
