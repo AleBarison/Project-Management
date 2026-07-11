@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Capitoli 12–20</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0b0d14; --surface: #13161f; --surface2: #1a1f2e;
+    --border: #252a3a; --border2: #2d3448;
+    --text: #e8eaf0; --muted: #6b7280; --dim: #9ca3af;
+    --accent: #f59e0b; --glow: rgba(245,158,11,0.1);
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  .hero {
+    background: linear-gradient(135deg, #1a1200 0%, #0b0d14 60%, #1a0a00 100%);
+    padding: 52px 24px 40px; text-align: center;
+    border-bottom: 1px solid var(--border); position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block; background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.35); color: #fcd34d;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 5px 16px; border-radius: 99px; margin-bottom: 18px;
+  }
+  .hero h1 { font-size: clamp(1.7rem, 4vw, 2.5rem); font-weight: 900; color: #fff; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 12px; }
+  .hero h1 span { color: #fbbf24; }
+  .hero p { color: var(--muted); font-size: 0.95rem; max-width: 520px; margin: 0 auto 32px; line-height: 1.6; }
+  .stats-row { display: flex; justify-content: center; gap: 0; max-width: 380px; margin: 0 auto;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .stat { flex: 1; padding: 16px 8px; text-align: center; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-n { font-size: 1.5rem; font-weight: 800; color: #fbbf24; }
+  .stat-l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+  .prog-wrap { background: var(--surface); padding: 14px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .prog-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+  .prog-label { font-size: 0.78rem; color: var(--muted); }
+  .prog-count { font-size: 0.78rem; font-weight: 700; color: #fbbf24; }
+  .prog-bg { background: var(--border); border-radius: 99px; height: 5px; }
+  .prog-fill { background: linear-gradient(90deg, #f59e0b, #ef4444); height: 5px; border-radius: 99px; transition: width 0.35s ease; width: 0%; }
+
+  .sec-head { max-width: 720px; margin: 0 auto; padding: 28px 24px 8px; }
+  .sec-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25);
+    color: #fcd34d; font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 6px;
+  }
+  .sec-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-top: 6px; }
+
+  .cards { max-width: 720px; margin: 0 auto; padding: 8px 24px; }
+  .qcard {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px; margin-bottom: 12px; transition: border-color 0.2s;
+  }
+  .qcard:hover { border-color: var(--border2); }
+  .qnum { font-size: 0.7rem; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .qtext { font-size: 0.97rem; font-weight: 600; color: #f1f5f9; line-height: 1.55; margin-bottom: 14px; }
+
+  .opt {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 11px 14px; border-radius: 9px;
+    border: 1.5px solid var(--border2); margin-bottom: 7px; cursor: pointer; transition: all 0.18s;
+  }
+  .opt:hover { border-color: #f59e0b; background: var(--glow); }
+  .opt.selected { border-color: #f59e0b; background: var(--glow); }
+  .opt.correct { border-color: #10b981; background: rgba(16,185,129,0.08); }
+  .opt.wrong   { border-color: #ef4444; background: rgba(239,68,68,0.08); }
+  .opt input[type=radio] { display: none; }
+  .opt-l {
+    width: 22px; height: 22px; border-radius: 6px; background: var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700; color: var(--muted); flex-shrink: 0; transition: all 0.18s;
+  }
+  .opt.selected .opt-l { background: #f59e0b; color: #000; }
+  .opt.correct  .opt-l { background: #10b981; color: #fff; }
+  .opt.wrong    .opt-l { background: #ef4444; color: #fff; }
+  .opt label { cursor: pointer; font-size: 0.9rem; color: #cbd5e1; line-height: 1.45; }
+
+  .footer { max-width: 720px; margin: 0 auto; padding: 16px 24px 48px; }
+  .submit-btn {
+    display: block; width: 100%; padding: 15px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: #fff; border: none; border-radius: 12px;
+    font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+  }
+  .submit-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  .submit-btn:disabled { background: var(--border2); color: var(--muted); cursor: not-allowed; transform: none; }
+
+  #result { display: none; max-width: 620px; margin: 0 auto; padding: 32px 24px 60px; }
+  .res-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 36px 28px; text-align: center; }
+  .res-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.9rem; font-weight: 800; }
+  .rg { background: rgba(16,185,129,0.1); color: #10b981; border: 3px solid #10b981; }
+  .rm { background: rgba(245,158,11,0.1); color: #f59e0b; border: 3px solid #f59e0b; }
+  .rb { background: rgba(239,68,68,0.1); color: #ef4444; border: 3px solid #ef4444; }
+  .res-title { font-size: 1.35rem; font-weight: 800; color: #f1f5f9; margin-bottom: 6px; }
+  .res-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .res-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+  .rs { text-align: center; }
+  .rs-n { font-size: 1.5rem; font-weight: 800; }
+  .rs-n.g { color: #10b981; } .rs-n.r { color: #ef4444; } .rs-n.b { color: #fbbf24; }
+  .rs-l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .fb-box { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-align: left; margin-bottom: 22px; }
+  .fb-title { font-size: 0.72rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .fb-text { font-size: 0.88rem; color: var(--dim); line-height: 1.7; }
+  .loading { font-style: italic; color: var(--muted); }
+
+  /* ERRORI */
+  .errors-box { margin-top: 20px; text-align: left; }
+  .errors-title { font-size: 0.8rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .err-item { background: var(--bg); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+  .err-num { font-size: 0.68rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .err-question { font-size: 0.88rem; font-weight: 600; color: #e2e8f0; margin-bottom: 10px; line-height: 1.45; }
+  .err-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+  .err-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .err-badge.wb { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+  .err-badge.cb { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .err-answer { font-size: 0.85rem; color: var(--dim); line-height: 1.4; }
+  .err-answer.ca { color: #6ee7b7; font-weight: 500; }
+  .no-errors { text-align: center; padding: 20px; color: #10b981; font-size: 0.95rem; font-weight: 600; }
+
+  .res-btns { display: flex; gap: 12px; }
+  .btn-retry { flex: 1; padding: 13px; background: none; border: 1.5px solid var(--border2); color: var(--dim); border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+  .btn-retry:hover { border-color: #f59e0b; color: #fbbf24; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Simulazione Esame</div>
+  <h1>Quiz – <span>Capitoli 12–20</span></h1>
+  <p>Gestione risorse, rischi, qualità, approvvigionamenti, costi, comunicazione, pianificazione, sicurezza e changeover.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="s-total">–</div><div class="stat-l">Domande</div></div>
+    <div class="stat"><div class="stat-n">70%</div><div class="stat-l">Per passare</div></div>
+    <div class="stat"><div class="stat-n">9</div><div class="stat-l">Capitoli</div></div>
+  </div>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-row">
+    <span class="prog-label">Avanzamento</span>
+    <span class="prog-count" id="prog-count">0 / –</span>
+  </div>
+  <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+</div>
+
+<div id="quiz-body"></div>
+
+<div class="footer">
+  <button class="submit-btn" id="submit-btn" onclick="submitQuiz()" disabled>Consegna il Quiz</button>
+</div>
+
+<div id="result">
+  <div class="res-card">
+    <div class="res-circle" id="res-circle"></div>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-sub" id="res-sub"></div>
+    <div class="res-stats">
+      <div class="rs"><div class="rs-n g" id="rs-ok">–</div><div class="rs-l">Corrette</div></div>
+      <div class="rs"><div class="rs-n r" id="rs-no">–</div><div class="rs-l">Errate</div></div>
+      <div class="rs"><div class="rs-n b" id="rs-pct">–</div><div class="rs-l">Punteggio</div></div>
+    </div>
+    <div class="fb-box">
+      <div class="fb-title">💬 Feedback personalizzato</div>
+      <div class="fb-text" id="fb-text"><span class="loading">Generazione in corso…</span></div>
+    </div>
+    <div class="errors-box" id="errors-box"></div>
+    <div class="res-btns">
+      <button class="btn-retry" onclick="resetQuiz()">🔄 Riprova</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const sections = [
+  {
+    chip: "Cap. 12 — Gestione delle Risorse",
+    title: "Modello attività-risorse, schedulazione e compressione",
+    qs: [
+      { q: "Un'attività ha Duration 10 giorni, lavoro 4 giorni/uomo e una risorsa assegnata. Qual è la percentuale di impiego (FTE) della risorsa?", o: ["100% (1 FTE)", "40% (0,4 FTE)", "25% (0,25 FTE)", "10% (0,1 FTE)"], c: 1 },
+      { q: "Durante la schedulazione a risorse limitate, l'istogramma mostra che una risorsa è in sovraccarico per 3 settimane. Qual è la prima azione corretta del PM?", o: ["Aumentare il budget per assumere un'altra risorsa", "Identificare le attività non critiche con float disponibile e spostarle per livellare il carico", "Cancellare le attività meno prioritarie dal progetto", "Chiedere alla risorsa di fare straordinari per tutta la durata del sovraccarico"], c: 1 },
+      { q: "Il Crashing e il Fast Tracking sono entrambe tecniche di compressione della schedulazione. Qual è la differenza principale tra i due?", o: ["Il Crashing riduce la qualità, il Fast Tracking riduce il budget", "Il Crashing aggiunge risorse sulle attività critiche aumentando i costi; il Fast Tracking mette attività in parallelo aumentando i rischi", "Il Crashing è applicabile solo alle attività critiche, il Fast Tracking solo alle attività non critiche", "Non vi è differenza sostanziale: entrambi aumentano costi e rischi allo stesso modo"], c: 1 },
+      { q: "Un PM deve ridurre la durata del progetto di 2 settimane a budget invariato. Quale tecnica è più appropriata?", o: ["Crashing: aggiungere risorse alle attività critiche", "Fast Tracking: sovrapporre attività originariamente in sequenza accettando il rischio aggiuntivo", "Aumentare il numero di milestone per accelerare le approvazioni", "Ridurre la qualità dei deliverable per risparmiare tempo"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 13 — Gestione dei Rischi",
+    title: "Identificazione, analisi e strategie di risposta ai rischi",
+    qs: [
+      { q: "Un progetto ha identificato il rischio 'il fornitore chiave potrebbe non consegnare in tempo'. A metà progetto il fornitore comunica un ritardo di 3 settimane. Il rischio è diventato:", o: ["Un'opportunità da sfruttare", "Un Problem/Issue: l'evento si è verificato e deve essere gestito come problema attuale", "Un rischio secondario generato dalla risposta al rischio principale", "Una contingency reserve da attivare"], c: 1 },
+      { q: "Un PM valuta un rischio con probabilità 30% e impatto economico di 50.000€. Qual è il Risk Exposure (valore atteso)?", o: ["80.000€", "50.000€", "15.000€", "30.000€"], c: 2 },
+      { q: "Il team decide di affidare a un fornitore esterno lo sviluppo di un modulo critico per ridurre il rischio tecnico. Quale strategia di risposta ai rischi negativi è stata scelta?", o: ["Evitare: eliminano la causa del rischio", "Mitigare: riducono la probabilità del rischio", "Trasferire: spostano le conseguenze su un terzo", "Accettare: non fanno nulla e attendono"], c: 2 },
+      { q: "Un rischio identificato non si è ancora verificato, ma il PM nota che le condizioni che lo potrebbero scatenare stanno aumentando. Qual è l'azione corretta?", o: ["Attendere che il rischio si verifichi per poi applicare il workaround", "Aggiornare il Risk Register e considerare azioni di mitigazione proattive prima che si verifichi", "Eliminare il rischio dal Risk Register perché non si è ancora verificato", "Trasferire automaticamente il rischio allo Sponsor"], c: 1 },
+      { q: "Qual è la differenza tra una Contingency Reserve e un Workaround?", o: ["La Contingency Reserve è per rischi positivi, il Workaround per rischi negativi", "La Contingency Reserve è pianificata in anticipo per rischi identificati; il Workaround è una risposta improvvisata a un rischio già verificatosi senza piano previsto", "Non vi è differenza: entrambi sono risorse economiche accantonate", "La Contingency Reserve è gestita dallo Sponsor, il Workaround dal team"], c: 1 },
+      { q: "Un'azienda sta sviluppando una tecnologia innovativa. Il PM suggerisce di realizzare un prototipo funzionante prima di avviare il progetto completo. Quale strategia di risposta al rischio è questa?", o: ["Trasferire il rischio tecnologico a un laboratorio esterno", "Evitare il rischio escludendo la tecnologia innovativa dallo scope", "Mitigare il rischio riducendo la probabilità di fallimento tecnologico tramite prototipazione", "Accettare il rischio e accantonare una riserva di contingency"], c: 2 },
+      { q: "La Risk Breakdown Structure (RBS) differisce dalla WBS perché:", o: ["La RBS è usata solo nei progetti IT, la WBS in tutti i tipi di progetto", "La RBS scompone gerarchicamente le fonti di rischio, non il lavoro da eseguire", "La RBS è redatta dallo Sponsor, la WBS dal PM", "La RBS si costruisce solo dopo la WBS e ne dipende gerarchicamente"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 14 — Gestione della Qualità",
+    title: "Principi di qualità, costo della qualità e strumenti",
+    qs: [
+      { q: "Un team di sviluppo aggiunge automaticamente una funzione di reportistica avanzata non richiesta dal cliente perché 'migliora il prodotto'. Qual è il problema?", o: ["Nessun problema: aggiungere valore è sempre positivo", "È Gold Plating: aggiunge funzionalità non richieste che consumano risorse senza essere state richieste, rischiando di compromettere tempi e costi", "È un esempio di eccellenza tecnica da incoraggiare sempre", "È accettabile solo se il costo aggiuntivo è inferiore al 5% del budget"], c: 1 },
+      { q: "Un PM scopre che molti difetti vengono trovati solo durante il collaudo finale, aumentando enormemente i costi di correzione. Quale principio di quality management avrebbe potuto prevenire questa situazione?", o: ["Gold Plating: aggiungere più funzionalità per coprire i difetti", "Il principio 'Prevenzione vs Controllo': inserire la qualità nella progettazione avrebbe ridotto il costo della correzione tardiva", "Benchmarking: confrontarsi con altri progetti avrebbe evidenziato il problema prima", "Aumentare il numero di controlli finali per trovare i difetti più velocemente"], c: 1 },
+      { q: "Il Benchmarking nel Quality Management ha lo scopo di:", o: ["Misurare la soddisfazione del cliente tramite questionari", "Confrontare le prassi adottate nel progetto con quelle di progetti interni o esterni presi come modello", "Calcolare il costo della non-qualità e delle rilavorazioni", "Verificare che tutti i deliverable rispettino le specifiche contrattuali"], c: 1 },
+      { q: "Perché 'prevenire' è generalmente più conveniente di 'correggere' nella gestione della qualità?", o: ["Perché la prevenzione non richiede risorse aggiuntive", "Perché il costo della prevenzione è in genere inferiore al costo della rilevazione e correzione dei difetti", "Perché la correzione richiede l'approvazione dello Sponsor", "Perché i difetti trovati in produzione non possono essere corretti"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 15 — Gestione degli Approvvigionamenti",
+    title: "Make or Buy Analysis e gestione dei fornitori",
+    qs: [
+      { q: "Un'azienda deve sviluppare un modulo software. Internamente ha le competenze, ma le risorse sono già impegnate su altri progetti critici. Secondo la Make or Buy Analysis, cosa dovrebbe fare?", o: ["Sempre sviluppare internamente per mantenere il know-how", "Valutare il Buy: acquistare esternamente è giustificato quando le risorse interne sono già saturate", "Posticipare il modulo a quando le risorse si libereranno", "Assumere nuove risorse indipendentemente dai costi"], c: 1 },
+      { q: "Nella Make or Buy Analysis, i 'costi indiretti' includono:", o: ["Il prezzo di acquisto del prodotto/servizio esterno", "I costi legati al processo di acquisto: ricerca fornitori, contrattazione, monitoraggio e gestione del rapporto", "Il costo delle risorse interne che avrebbero realizzato il prodotto", "Il costo di eventuali penali contrattuali"], c: 1 },
+      { q: "Secondo ISO 9001:2015, quando si acquista da fornitori esterni, l'azienda deve:", o: ["Fidarsi del fornitore senza controlli aggiuntivi se ha una buona reputazione", "Determinare criteri di valutazione, monitorare le prestazioni e assicurare la conformità ai requisiti", "Acquistare sempre dal fornitore più economico per rispettare il budget", "Limitarsi a verificare la consegna finale senza controlli intermedi"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 16 — Gestione dei Costi",
+    title: "Stima dei costi, riserve e determinazione del budget",
+    qs: [
+      { q: "A inizio progetto il PM stima un budget di 500.000€ con accuratezza ROM. Qual è l'intervallo realistico del costo finale?", o: ["Da 475.000€ a 525.000€", "Da 450.000€ a 550.000€", "Da 375.000€ a 875.000€", "Da 250.000€ a 750.000€"], c: 2 },
+      { q: "Il PM ha stimato un costo di 200.000€ per le attività. Ha aggiunto 20.000€ di Contingency Reserve per i rischi identificati. Qual è la Cost Baseline?", o: ["200.000€", "220.000€", "200.000€ + Management Reserve", "Dipende dal valore della Management Reserve"], c: 1 },
+      { q: "La Management Reserve è destinata a:", o: ["Coprire i rischi identificati nel Risk Register", "Gestire il lavoro imprevisto per rischi non identificati ('unknown-unknown'), non è inclusa nella Cost Baseline", "Pagare gli straordinari del team in caso di ritardo", "Finanziare le richieste di modifica approvate durante il progetto"], c: 1 },
+      { q: "La curva ad S nella gestione dei costi rappresenta:", o: ["L'andamento del rischio nel tempo", "L'andamento cumulativo della Cost Baseline nel tempo, tipicamente lenta all'inizio, rapida al centro, di nuovo lenta alla fine", "Il confronto tra costi pianificati e costi effettivi", "Il numero di attività completate per ogni periodo"], c: 1 },
+      { q: "Un PM riceve una stima di costo da un fornitore basata su un progetto simile realizzato 3 anni fa. Quale tipo di stima è e qual è il principale rischio?", o: ["Stima parametrica; rischio di sottostimare i costi di manodopera", "Stima per analogia; rischio che le differenze tra i due progetti non siano adeguatamente considerate", "Stima bottom-up; rischio di dimenticare alcune componenti di costo", "Stima definitiva; nessun rischio significativo data la base storica"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 17 — La Comunicazione",
+    title: "Communication Management, canali e best practice",
+    qs: [
+      { q: "Un team passa da 4 a 8 persone. Di quanto aumenta il numero di canali di comunicazione?", o: ["Da 6 a 28 canali: aumento di 22 canali", "Da 6 a 16 canali: aumento di 10 canali", "Da 4 a 8 canali: raddoppia esattamente", "Da 12 a 64 canali: aumenta proporzionalmente al quadrato"], c: 0 },
+      { q: "Un PM invia una email dettagliata con tutte le informazioni tecniche del progetto al CEO. Il CEO non risponde. Quale principio di comunicazione efficace è stato violato?", o: ["La chiarezza dello scopo della comunicazione", "La comprensione del destinatario: il CEO probabilmente preferisce report sintetici ad alto livello, non dettagli tecnici", "La misurazione dell'efficacia della comunicazione", "L'uso corretto dei canali formali di comunicazione"], c: 1 },
+      { q: "Durante una riunione di avanzamento, il PM nota che un membro chiave del team annuisce verbalmente ma ha le braccia conserte, evita il contatto visivo e parla con tono piatto. Cosa dovrebbe dedurre il PM?", o: ["Il membro è d'accordo perché ha annuito", "Potrebbe esserci un disaccordo non espresso: la comunicazione non verbale e para-verbale contraddicono quella verbale", "Il membro è semplicemente stanco e non c'è nulla da preoccuparsi", "L'accordo verbale è sufficiente: il linguaggio del corpo è irrilevante in contesto professionale"], c: 1 },
+      { q: "Quale affermazione sul Communication Management è corretta?", o: ["La comunicazione deve essere spontanea e non strutturata per risultare autentica", "La comunicazione efficace deve essere progettata, non improvvisata, e necessita di strumenti, competenze e una strategia chiara", "Il PM deve comunicare solo quando ci sono problemi da segnalare", "La comunicazione scritta formale è sempre più efficace di quella verbale in ogni contesto"], c: 1 },
+      { q: "Perché la comunicazione rappresenta circa il 90% del lavoro del PM?", o: ["Perché il PM non ha competenze tecniche e si limita a comunicare", "Perché il PM coordina persone e stakeholder diversi, e la capacità di comunicare influenza direttamente le performance del progetto", "Perché i sistemi informativi aziendali richiedono aggiornamenti continui", "Perché il 90% dei problemi di progetto sono causati da errori di documentazione"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 18 — La Pianificazione",
+    title: "Piano di Progetto: caratteristiche, struttura e contenuti",
+    qs: [
+      { q: "Un PM presenta un Piano di Progetto ottimistico con stime molto aggressive per ottenere l'approvazione dello Sponsor. Quale caratteristica fondamentale del Piano viene violata?", o: ["Formalizzato: il piano non è sufficientemente documentato", "Realistico: il piano deve basarsi su stime e risorse effettivamente disponibili, non su aspettative ottimistiche", "Condiviso: il piano non è stato comunicato al team", "Autorizzato: il piano richiede ulteriori approvazioni"], c: 1 },
+      { q: "Quale tra questi NON è un contenuto tipico del Piano di Progetto?", o: ["Work Breakdown Structure (WBS)", "Registro dei rischi", "Curriculum vitae del Project Manager", "Piano della comunicazione con gli stakeholder"], c: 2 },
+      { q: "Un Piano di Progetto approvato viene modificato senza seguire una procedura formale. Quale problema si crea?", o: ["Nessun problema se la modifica è piccola e approvata verbalmente dal PM", "Si perde il riferimento formale per il monitoraggio e il controllo: la baseline diventa inaffidabile", "Il piano aggiornato deve essere riapprovato solo se il costo cambia di più del 10%", "È sufficiente comunicare la modifica via email agli stakeholder principali"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 19 — Sicurezza delle Informazioni",
+    title: "Triade CIA, autenticazione, RPO e RTO",
+    qs: [
+      { q: "Un database aziendale viene modificato da un utente non autorizzato alterando i dati dei clienti. Quale principio CIA è stato violato?", o: ["Confidentiality: i dati sono stati esposti", "Integrity: i dati sono stati modificati in modo improprio compromettendo la loro correttezza", "Availability: i dati non sono più accessibili agli utenti autorizzati", "Authentication: il sistema di accesso non ha funzionato"], c: 1 },
+      { q: "Un sistema bancario deve essere ripristinato entro 2 ore da un'interruzione e non può perdere nemmeno una transazione. Quale coppia di indicatori descrive questi requisiti?", o: ["RTO = 0, RPO = 2 ore", "RTO = 2 ore, RPO = 0 (nessuna transazione persa)", "RTO = 2 ore, RPO = 2 ore", "RPO = 0, RTO = 0"], c: 1 },
+      { q: "Il principio del 'least privilege' (privilegio minimo) è una misura di sicurezza che garantisce:", o: ["Che tutti gli utenti possano accedere a tutte le informazioni in caso di emergenza", "Che ogni utente acceda solo alle informazioni strettamente necessarie per svolgere il proprio lavoro", "Che le password vengano cambiate ogni 30 giorni", "Che tutti i dati siano crittografati in transito e a riposo"], c: 1 },
+      { q: "Un dipendente accede al sistema aziendale inserendo la password e poi confermando tramite un codice OTP inviato al suo telefono. Questa è:", o: ["Single factor authentication: entrambi i fattori sono 'knowledge'", "Two factor authentication (MFA): combina 'knowledge' (password) e 'ownership' (telefono)", "Biometric authentication: usa caratteristiche fisiche dell'utente", "Node authentication: identifica il dispositivo dell'utente"], c: 1 },
+      { q: "Un'azienda manifatturiera produce 1.000 pezzi al giorno. Il sistema di tracciamento registra i dati ogni 500 pezzi. In caso di guasto, quanti pezzi al massimo potrebbero essere 'persi' nei dati? Quale indicatore descrive questa tolleranza?", o: ["RTO = 500 pezzi: il sistema deve ripristinarsi entro 500 pezzi prodotti", "RPO = 499 pezzi: la quantità massima di dati (pezzi non registrati) che si accetta di perdere", "RPO = 1.000 pezzi: l'intera produzione giornaliera è a rischio", "RTO = 499 pezzi: il tempo di ripristino è espresso in pezzi prodotti"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 20 — Changeover",
+    title: "Tecniche di transizione tra sistemi: parallelo, per fasi e immediato",
+    qs: [
+      { q: "Un'azienda sostituisce il suo ERP. Decide di mantenere entrambi i sistemi attivi per 3 mesi, confrontando i risultati. Quale metodo di Changeover sta usando e qual è il vantaggio principale?", o: ["Changeover Immediato: vantaggio di velocità e semplicità", "Changeover Parallelo: vantaggio di poter verificare il nuovo sistema prima di dismettere il vecchio, minimizzando il rischio", "Changeover per Fasi: vantaggio di sostituire un modulo alla volta", "Fallback: vantaggio di poter tornare al vecchio sistema in qualsiasi momento"], c: 1 },
+      { q: "Un'azienda migra il sistema di gestione delle HR per fasi: prima i dati anagrafici, poi le buste paga, poi i permessi. Quale svantaggio tipico del Changeover per Fasi potrebbe emergere?", o: ["Il rischio che entrambi i sistemi siano offline contemporaneamente", "Difficoltà nel mantenere la coerenza dei dati tra i moduli vecchi e nuovi ancora attivi contemporaneamente", "Il costo eccessivo dovuto alla necessità di tenere due sistemi identici in parallelo", "L'impossibilità di tornare al sistema precedente in caso di problemi"], c: 1 },
+      { q: "Il Changeover Immediato (Abrupt) è preferito quando:", o: ["Il sistema è mission-critical e qualsiasi downtime è inaccettabile", "Il rollback è relativamente garantito o l'impatto di un'interruzione delle attività è minimo", "Il nuovo sistema è molto diverso dal precedente e richiede una lunga formazione", "L'azienda ha budget sufficiente per mantenere due sistemi contemporaneamente"], c: 1 },
+      { q: "Cosa sono le 'Fallback Procedures' (procedure di rollback) e perché sono essenziali?", o: ["Sono procedure per accelerare il go-live del nuovo sistema in caso di ritardi", "Sono attività da eseguire per tornare allo stato precedente se il nuovo sistema non funziona come previsto, garantendo la continuità operativa", "Sono procedure di backup dei dati da eseguire prima di ogni changeover", "Sono linee guida per la formazione del personale sul nuovo sistema"], c: 1 },
+      { q: "Per quale tipo di Changeover è ancora più importante che tutte le attività siano pianificate con cura e realizzate in anticipo rispetto agli altri metodi?", o: ["Changeover Parallelo, perché entrambi i sistemi devono essere sincronizzati", "Changeover per Fasi, perché ogni modulo richiede una pianificazione separata", "Changeover Immediato, perché non c'è possibilità di correzione graduale: o funziona o si torna indietro", "Fallback, perché è la procedura più complessa da implementare"], c: 2 },
+    ]
+  }
+];
+
+// Flatten
+const allQ = [];
+sections.forEach((s, si) => s.qs.forEach((q) => allQ.push({ ...q, si })));
+const TOTAL = allQ.length;
+let answers = Array(TOTAL).fill(null);
+
+document.getElementById('s-total').textContent = TOTAL;
+document.getElementById('prog-count').textContent = `0 / ${TOTAL}`;
+
+function build() {
+  const body = document.getElementById('quiz-body');
+  body.innerHTML = '';
+  let gi = 0;
+  sections.forEach(sec => {
+    const sh = document.createElement('div');
+    sh.className = 'sec-head';
+    sh.innerHTML = `<div class="sec-chip">${sec.chip}</div><div class="sec-title">${sec.title}</div>`;
+    body.appendChild(sh);
+    const wrap = document.createElement('div');
+    wrap.className = 'cards';
+    sec.qs.forEach(() => {
+      const i = gi;
+      const q = allQ[i];
+      const card = document.createElement('div');
+      card.className = 'qcard';
+      card.innerHTML = `
+        <div class="qnum">Domanda ${i+1} di ${TOTAL}</div>
+        <div class="qtext">${q.q}</div>
+        ${q.o.map((op, j) => `
+          <div class="opt" id="o-${i}-${j}" onclick="pick(${i},${j})">
+            <input type="radio" name="q${i}">
+            <div class="opt-l">${String.fromCharCode(65+j)}</div>
+            <label>${op}</label>
+          </div>`).join('')}
+      `;
+      wrap.appendChild(card);
+      gi++;
+    });
+    body.appendChild(wrap);
+  });
+}
+
+function pick(qi, oi) {
+  answers[qi] = oi;
+  for (let j = 0; j < allQ[qi].o.length; j++)
+    document.getElementById(`o-${qi}-${j}`).classList.remove('selected');
+  document.getElementById(`o-${qi}-${oi}`).classList.add('selected');
+  const done = answers.filter(a => a !== null).length;
+  document.getElementById('prog-fill').style.width = (done/TOTAL*100) + '%';
+  document.getElementById('prog-count').textContent = `${done} / ${TOTAL}`;
+  document.getElementById('submit-btn').disabled = done < TOTAL;
+}
+
+function submitQuiz() {
+  let score = 0;
+  const wrong = [];
+  allQ.forEach((q, i) => {
+    const c = q.c, ch = answers[i];
+    for (let j = 0; j < q.o.length; j++) {
+      const el = document.getElementById(`o-${i}-${j}`);
+      el.style.pointerEvents = 'none';
+      if (j === c) el.classList.add('correct');
+      else if (j === ch) el.classList.add('wrong');
+    }
+    if (ch === c) score++;
+    else wrong.push({ n: i+1, q: q.q, y: q.o[ch], c: q.o[c] });
+  });
+
+  document.getElementById('submit-btn').style.display = 'none';
+  const pct = Math.round(score / TOTAL * 100);
+  const circle = document.getElementById('res-circle');
+  circle.textContent = pct + '%';
+  circle.className = 'res-circle ' + (pct >= 70 ? 'rg' : pct >= 50 ? 'rm' : 'rb');
+  document.getElementById('res-title').textContent = pct >= 80 ? '🎉 Ottimo risultato!' : pct >= 60 ? '👍 Quasi, puoi migliorare!' : '📚 Ripassia ancora un po\'!';
+  document.getElementById('res-sub').textContent = `Capitoli 12–20 · ${score}/${TOTAL} risposte corrette`;
+  document.getElementById('rs-ok').textContent = score;
+  document.getElementById('rs-no').textContent = TOTAL - score;
+  document.getElementById('rs-pct').textContent = pct + '%';
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+  buildErrors(wrong);
+  fetchFeedback(score, pct, wrong);
+}
+
+function buildErrors(wrong) {
+  const box = document.getElementById('errors-box');
+  if (wrong.length === 0) {
+    box.innerHTML = '<div class="no-errors">✅ Perfetto! Nessun errore commesso.</div>';
+    return;
+  }
+  let html = `<div class="errors-title">❌ Risposte errate (${wrong.length})</div>`;
+  wrong.forEach(w => {
+    html += `
+      <div class="err-item">
+        <div class="err-num">Domanda ${w.n}</div>
+        <div class="err-question">${w.q}</div>
+        <div class="err-row"><span class="err-badge wb">Tua risposta</span><span class="err-answer">${w.y}</span></div>
+        <div class="err-row"><span class="err-badge cb">Risposta corretta</span><span class="err-answer ca">${w.c}</span></div>
+      </div>`;
+  });
+  box.innerHTML = html;
+}
+
+async function fetchFeedback(score, pct, wrong) {
+  const ws = wrong.length === 0 ? 'Nessun errore!' :
+    wrong.slice(0, 8).map(w => `- D${w.n}: "${w.q.substring(0,60)}…" → Tua: "${w.y}" (corretta: "${w.c}")`).join('\n');
+
+  const prompt = `Sei un professore di Project Management. Uno studente ha completato un quiz sui capitoli 12-20 (gestione risorse, schedulazione a risorse limitate, compressione, risk management, quality management, procurement, cost management, communication management, piano di progetto, sicurezza delle informazioni CIA/MFA/RPO/RTO, e changeover) ottenendo ${score}/${TOTAL} (${pct}%).
+
+Errori principali:\n${ws}
+
+Scrivi un feedback preciso di 5 righe in italiano: incoraggiante, individua i concetti da ripassare in base agli errori e dai un consiglio pratico per l'esame. Sii diretto.`;
+
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [{ role: "user", content: prompt }] })
+    });
+    const d = await r.json();
+    document.getElementById('fb-text').textContent = d.content?.find(b => b.type === 'text')?.text || "Feedback non disponibile.";
+  } catch { document.getElementById('fb-text').textContent = "Feedback non disponibile al momento."; }
+}
+
+function resetQuiz() {
+  answers = Array(TOTAL).fill(null);
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('submit-btn').style.display = 'block';
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('prog-fill').style.width = '0%';
+  document.getElementById('prog-count').textContent = `0 / ${TOTAL}`;
+  build();
+  window.scrollTo(0, 0);
+}
+
+build();
+</script>
+</body>
+</html>

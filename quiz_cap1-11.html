@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Capitoli 1–11</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0b0d14; --surface: #13161f; --surface2: #1a1f2e;
+    --border: #252a3a; --border2: #2d3448;
+    --text: #e8eaf0; --muted: #6b7280; --dim: #9ca3af;
+    --accent: #06b6d4; --accent2: #0891b2; --glow: rgba(6,182,212,0.12);
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0f1825 0%, #0b0d14 60%, #001a1f 100%);
+    padding: 52px 24px 40px; text-align: center;
+    border-bottom: 1px solid var(--border); position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block; background: rgba(6,182,212,0.1);
+    border: 1px solid rgba(6,182,212,0.35); color: #67e8f9;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 5px 16px; border-radius: 99px; margin-bottom: 18px;
+  }
+  .hero h1 { font-size: clamp(1.7rem, 4vw, 2.5rem); font-weight: 900; color: #fff; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 12px; }
+  .hero h1 span { color: #22d3ee; }
+  .hero p { color: var(--muted); font-size: 0.95rem; max-width: 480px; margin: 0 auto 32px; line-height: 1.6; }
+  .stats-row { display: flex; justify-content: center; gap: 0; max-width: 380px; margin: 0 auto;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .stat { flex: 1; padding: 16px 8px; text-align: center; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-n { font-size: 1.5rem; font-weight: 800; color: #22d3ee; }
+  .stat-l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+  /* PROGRESS */
+  .prog-wrap { background: var(--surface); padding: 14px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .prog-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+  .prog-label { font-size: 0.78rem; color: var(--muted); }
+  .prog-count { font-size: 0.78rem; font-weight: 700; color: #22d3ee; }
+  .prog-bg { background: var(--border); border-radius: 99px; height: 5px; }
+  .prog-fill { background: linear-gradient(90deg, #06b6d4, #0ea5e9); height: 5px; border-radius: 99px; transition: width 0.35s ease; width: 0%; }
+
+  /* SECTION HEADERS */
+  .sec-head { max-width: 720px; margin: 0 auto; padding: 28px 24px 8px; }
+  .sec-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2);
+    color: #67e8f9; font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 6px;
+  }
+  .sec-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-top: 6px; }
+
+  /* CARDS */
+  .cards { max-width: 720px; margin: 0 auto; padding: 8px 24px; }
+  .qcard {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px; margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .qcard:hover { border-color: var(--border2); }
+  .qnum { font-size: 0.7rem; font-weight: 700; color: #06b6d4; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .qtext { font-size: 0.97rem; font-weight: 600; color: #f1f5f9; line-height: 1.55; margin-bottom: 14px; }
+
+  .opt {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 11px 14px; border-radius: 9px;
+    border: 1.5px solid var(--border2); margin-bottom: 7px;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .opt:hover { border-color: #06b6d4; background: var(--glow); }
+  .opt.selected { border-color: #06b6d4; background: var(--glow); }
+  .opt.correct { border-color: #10b981; background: rgba(16,185,129,0.08); }
+  .opt.wrong   { border-color: #ef4444; background: rgba(239,68,68,0.08); }
+  .opt input[type=radio] { display: none; }
+  .opt-l {
+    width: 22px; height: 22px; border-radius: 6px; background: var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700; color: var(--muted); flex-shrink: 0; transition: all 0.18s;
+  }
+  .opt.selected .opt-l { background: #06b6d4; color: #fff; }
+  .opt.correct  .opt-l { background: #10b981; color: #fff; }
+  .opt.wrong    .opt-l { background: #ef4444; color: #fff; }
+  .opt label { cursor: pointer; font-size: 0.9rem; color: #cbd5e1; line-height: 1.45; }
+
+  /* FOOTER */
+  .footer { max-width: 720px; margin: 0 auto; padding: 16px 24px 48px; }
+  .submit-btn {
+    display: block; width: 100%; padding: 15px;
+    background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+    color: #fff; border: none; border-radius: 12px;
+    font-size: 1rem; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .submit-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  .submit-btn:disabled { background: var(--border2); color: var(--muted); cursor: not-allowed; transform: none; }
+
+  /* RESULT */
+  #result { display: none; max-width: 620px; margin: 0 auto; padding: 32px 24px 60px; }
+  .res-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 36px 28px; text-align: center; }
+  .res-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.9rem; font-weight: 800; }
+  .rg { background: rgba(16,185,129,0.1); color: #10b981; border: 3px solid #10b981; }
+  .rm { background: rgba(245,158,11,0.1); color: #f59e0b; border: 3px solid #f59e0b; }
+  .rb { background: rgba(239,68,68,0.1);  color: #ef4444;  border: 3px solid #ef4444; }
+  .res-title { font-size: 1.35rem; font-weight: 800; color: #f1f5f9; margin-bottom: 6px; }
+  .res-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .res-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+  .rs { text-align: center; }
+  .rs-n { font-size: 1.5rem; font-weight: 800; }
+  .rs-n.g { color: #10b981; } .rs-n.r { color: #ef4444; } .rs-n.b { color: #22d3ee; }
+  .rs-l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .fb-box { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-align: left; margin-bottom: 22px; }
+  .fb-title { font-size: 0.72rem; font-weight: 700; color: #22d3ee; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .fb-text { font-size: 0.88rem; color: var(--dim); line-height: 1.7; }
+  .loading { font-style: italic; color: var(--muted); }
+  .res-btns { display: flex; gap: 12px; }
+  .btn-retry { flex: 1; padding: 13px; background: none; border: 1.5px solid var(--border2); color: var(--dim); border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+  .btn-retry:hover { border-color: #06b6d4; color: #22d3ee; }
+
+  /* RIEPILOGO ERRORI */
+  .errors-box { margin-top: 20px; text-align: left; }
+  .errors-title { font-size: 0.8rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .err-item { background: var(--bg); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+  .err-num { font-size: 0.68rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .err-question { font-size: 0.88rem; font-weight: 600; color: #e2e8f0; margin-bottom: 10px; line-height: 1.45; }
+  .err-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+  .err-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .err-badge.wrong-badge { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+  .err-badge.correct-badge { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .err-answer { font-size: 0.85rem; color: var(--dim); line-height: 1.4; }
+  .err-answer.correct-ans { color: #6ee7b7; font-weight: 500; }
+  .no-errors { text-align: center; padding: 20px; color: #10b981; font-size: 0.95rem; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Simulazione Esame</div>
+  <h1>Quiz – <span>Capitoli 1–11</span></h1>
+  <p>Definizioni fondamentali, tipologie di progetto, metodologia, ruoli, vincoli, processi di avvio, pianificazione, WBS e schedulazione.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="s-total">–</div><div class="stat-l">Domande</div></div>
+    <div class="stat"><div class="stat-n">70%</div><div class="stat-l">Per passare</div></div>
+    <div class="stat"><div class="stat-n">11</div><div class="stat-l">Capitoli</div></div>
+  </div>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-row">
+    <span class="prog-label">Avanzamento</span>
+    <span class="prog-count" id="prog-count">0 / –</span>
+  </div>
+  <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+</div>
+
+<div id="quiz-body"></div>
+
+<div class="footer">
+  <button class="submit-btn" id="submit-btn" onclick="submit()" disabled>Consegna il Quiz</button>
+</div>
+
+<div id="result">
+  <div class="res-card">
+    <div class="res-circle" id="res-circle"></div>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-sub" id="res-sub"></div>
+    <div class="res-stats">
+      <div class="rs"><div class="rs-n g" id="rs-ok">–</div><div class="rs-l">Corrette</div></div>
+      <div class="rs"><div class="rs-n r" id="rs-no">–</div><div class="rs-l">Errate</div></div>
+      <div class="rs"><div class="rs-n b" id="rs-pct">–</div><div class="rs-l">Punteggio</div></div>
+    </div>
+    <div class="fb-box">
+      <div class="fb-title">💬 Feedback personalizzato</div>
+      <div class="fb-text" id="fb-text"><span class="loading">Generazione in corso…</span></div>
+    </div>
+    <div class="errors-box" id="errors-box"></div>
+    <div class="res-btns">
+      <button class="btn-retry" onclick="reset()">🔄 Riprova</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const sections = [
+  {
+    chip: "Cap. 1 — Il Progetto",
+    title: "Definizione, caratteristiche e confronto con il Processo",
+    qs: [
+      { q: "Quale delle seguenti affermazioni descrive correttamente la 'temporaneità' di un progetto?", o: ["Il progetto può essere interrotto in qualsiasi momento dal management", "Il progetto ha un inizio e una fine definiti e non è un'attività continuativa", "Il progetto dura al massimo un anno solare", "Il progetto termina solo quando il cliente è soddisfatto"], c: 1 },
+      { q: "Due progetti identici nello scopo ma con team diversi possono comunque essere considerati 'unici' secondo il PMBOK. Perché?", o: ["Perché hanno codici identificativi diversi nel sistema gestionale", "Perché ogni progetto presenta elementi di differenziazione, incluse le persone, il contesto e le condizioni", "Perché sono avviati in momenti diversi", "Non possono: se lo scopo è identico il progetto non è unico"], c: 1 },
+      { q: "Quale differenza fondamentale esiste tra Progetto e Processo in termini di output?", o: ["Il progetto produce output standardizzati, il processo produce output unici", "Il progetto produce output con caratteristiche di unicità, il processo produce output standardizzati", "Non vi è differenza: entrambi producono output ripetibili", "Il processo produce output più innovativi del progetto"], c: 1 },
+      { q: "In quale situazione un'attività di produzione può essere considerata un Progetto?", o: ["Quando si produce lo stesso prodotto ogni giorno con le stesse modalità", "Quando si avvia la produzione di un nuovo prodotto mai realizzato prima, con un inizio e fine definiti", "Quando coinvolge più di 10 persone dell'organizzazione", "Quando ha un budget superiore a una soglia prestabilita"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 1 — Programma e Portfolio",
+    title: "Struttura gerarchica: Portfolio, Programma e Progetto",
+    qs: [
+      { q: "Quale vantaggio principale offre la gestione coordinata di un Programma rispetto alla gestione separata dei singoli progetti?", o: ["Riduce il numero di Project Manager necessari", "Permette un livello di controllo superiore e ottimizza l'uso delle risorse condivise", "Elimina la necessità di un Project Charter per ogni progetto", "Consente di bypassare le procedure formali di approvazione"], c: 1 },
+      { q: "Il Portfolio è paragonabile a un portafoglio azionario perché:", o: ["Contiene solo progetti ad alto rischio e alto rendimento", "Bilancia rischio e rendimento, diversifica le iniziative e massimizza il ritorno strategico sull'investimento", "È gestito esclusivamente dal CFO aziendale", "Viene liquidato alla fine dell'anno fiscale"], c: 1 },
+      { q: "Un'azienda ha tre progetti: A (sviluppo app mobile), B (lancio marketing dell'app), C (infrastruttura server). Tutti puntano a lanciare il nuovo servizio. Come si classificano correttamente?", o: ["Tre Portfolio distinti con obiettivi separati", "Tre Processi operativi dell'azienda", "Un Programma composto da tre Progetti correlati con obiettivo comune", "Un singolo Progetto suddiviso in tre fasi"], c: 2 },
+    ]
+  },
+  {
+    chip: "Cap. 2 — Tipologie di Progetti",
+    title: "Classificazione dei progetti per tipo di cliente e obiettivo",
+    qs: [
+      { q: "In un progetto 'sviluppo prodotto per il mercato', chi svolge il ruolo di 'cliente' interno?", o: ["Il Project Sponsor", "Il PMO aziendale", "Il Marketing", "Il team di sviluppo"], c: 2 },
+      { q: "Qual è la differenza principale tra un progetto 'commessa' e un progetto 'guidato da capitolato'?", o: ["Nella commessa il cliente definisce le specifiche direttamente; nel capitolato le specifiche sono contenute in un documento di gara", "Non vi è differenza: entrambi hanno specifiche definite dal cliente", "Il capitolato non prevede un processo competitivo di selezione", "La commessa è sempre interna all'organizzazione"], c: 0 },
+      { q: "Un progetto di 'sviluppo in base alle esigenze del cliente' si distingue per:", o: ["La totale assenza di interazione con il cliente durante lo sviluppo", "L'alto grado di personalizzazione e la co-progettazione con il cliente", "Il fatto che le specifiche siano definite esclusivamente dal Marketing", "L'assenza di un contratto formale con il committente"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 3 — Metodologia PM",
+    title: "Definizione, componenti e complessità del Project Management",
+    qs: [
+      { q: "Quale dei seguenti è un esempio di 'Tecnica' nel Project Management (non 'Strumento')?", o: ["Microsoft Project", "Un template di WBS precompilato", "Il metodo PERT per la stima della durata delle attività", "Un sistema informativo di reportistica"], c: 2 },
+      { q: "Un'azienda gestisce contemporaneamente 30 piccoli progetti con risorse condivise. Quale fattore di complessità è prevalente?", o: ["Complessità tecnica delle soluzioni adottate", "Numero di progetti contemporanei e condivisione delle risorse", "Dimensione della singola area aziendale", "Complessità organizzativa del singolo progetto"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 4 — Ruoli Chiave",
+    title: "PMO, Project Manager e Project Sponsor",
+    qs: [
+      { q: "Un Project Manager deve risolvere un problema che va oltre la sua autorità organizzativa. A chi si rivolge?", o: ["Direttamente al cliente esterno", "Al PMO per una soluzione tecnica", "Al Project Sponsor per rimuovere l'ostacolo strategico", "Al team di progetto per una soluzione condivisa"], c: 2 },
+      { q: "Quale affermazione sul PMO è corretta?", o: ["Il PMO gestisce operativamente tutti i progetti dell'azienda", "Il PMO definisce le metodologie, standardizza i processi e riporta alla direzione sullo stato del portafoglio", "Il PMO sostituisce il Project Manager nei progetti complessi", "Il PMO è presente solo nelle grandi aziende con più di 100 dipendenti"], c: 1 },
+      { q: "Il Project Manager è paragonabile a un 'direttore d'orchestra' perché:", o: ["Suona lui stesso tutti gli strumenti in caso di necessità", "Coordina specialisti diversi verso un obiettivo comune senza dover eseguire direttamente ogni attività", "Decide autonomamente il programma musicale senza consultare nessuno", "Valuta e licenzia i musicisti che non performano adeguatamente"], c: 1 },
+      { q: "Quale competenza del PM moderno è considerata oggi altrettanto importante — se non più — delle competenze tecniche?", o: ["La conoscenza approfondita di tutti i linguaggi di programmazione", "Le competenze relazionali: comunicazione, mediazione, negoziazione e gestione dei conflitti", "La capacità di redigere autonomamente tutti i documenti di progetto", "La conoscenza dettagliata del settore industriale del cliente"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 5 — Vincoli di Progetto",
+    title: "Triple Constraint e altri vincoli",
+    qs: [
+      { q: "Un cliente chiede di aggiungere nuove funzionalità al prodotto a metà progetto senza aumentare il budget. Quale vincolo del Triplo Vincolo è sotto pressione?", o: ["Solo il Tempo, che dovrà aumentare", "Solo il Costo, che è fisso", "Tempo e/o Costo, perché aumentare lo Scope senza toccare il budget comprime necessariamente un altro vincolo", "Nessuno: le funzionalità aggiuntive non impattano il Triplo Vincolo"], c: 2 },
+      { q: "Quale tra i seguenti NON rientra nei vincoli 'aggiuntivi' oltre al Triplo Vincolo?", o: ["Disponibilità di personale qualificato", "Tempi di consegna dei fornitori", "Il numero di stakeholder del progetto", "Requisiti normativi di qualità"], c: 2 },
+      { q: "In un progetto con scadenza fissa non negoziabile, quale leva ha il PM per gestire un aumento di scope richiesto dal cliente?", o: ["Aumentare il tempo del progetto", "Aumentare il budget e/o ridurre altri elementi dello scope originale", "Ignorare la richiesta del cliente", "Ridurre la qualità dei deliverable senza comunicarlo"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 6 — Motivi di Insuccesso",
+    title: "Cause di fallimento e strategie di prevenzione",
+    qs: [
+      { q: "Un progetto viene consegnato in ritardo di 6 mesi. L'analisi post-mortem rivela che nessuno aveva identificato la dipendenza critica da un fornitore esterno. Quale causa di fallimento è prevalente?", o: ["Mancanza di commitment da parte della direzione", "Inadeguatezza dell'analisi dei rischi e delle criticità", "Cattiva gestione delle richieste di modifica", "Inadeguatezza del sistema informativo di gestione"], c: 1 },
+      { q: "Il 'Scope Creep' è classificato come causa di fallimento perché:", o: ["Aumenta la qualità del prodotto finale oltre le aspettative", "Le modifiche non documentate e non gestite formalmente alterano tempi, costi e risorse senza controllo", "Riduce il numero di stakeholder coinvolti nel progetto", "Migliora il rapporto con il cliente attraverso maggiore flessibilità"], c: 1 },
+      { q: "Quale coppia di cause di fallimento è più strettamente correlata tra loro?", o: ["Mancanza del PM e mancanza di pianificazione", "Sottostima della complessità e eccessiva comunicazione", "Mancanza di commitment e troppi controlli misurabili", "Inadeguatezza delle risorse e troppa pianificazione"], c: 0 },
+    ]
+  },
+  {
+    chip: "Cap. 9 — Processi di Avvio",
+    title: "Stakeholder, Project Charter e processo di Initiating",
+    qs: [
+      { q: "Il processo di Avvio (Initiating) include tre attività principali. Quale tra le seguenti NON ne fa parte?", o: ["Incarico al Project Manager da parte dello Sponsor", "Identificazione degli Stakeholder", "Stesura del Project Charter", "Sviluppo del Piano di Schedulazione dettagliato"], c: 3 },
+      { q: "Un'associazione ambientalista si oppone pubblicamente a un progetto di costruzione. Come si classifica nella matrice Potere/Interesse?", o: ["Stakeholder Chiave (Alto Potere, Alto Interesse)", "Stakeholder Istituzionale (Alto Potere, Basso Interesse)", "Stakeholder Operativo (Basso Potere, Alto Interesse)", "Stakeholder Marginale (Basso Potere, Basso Interesse)"], c: 0 },
+      { q: "Il Project Charter conferisce al PM l'autorità di:", o: ["Modificare il budget aziendale a sua discrezione", "Utilizzare le risorse organizzative per le attività del progetto", "Assumere e licenziare personale per il progetto", "Approvare autonomamente tutte le modifiche allo scope"], c: 1 },
+      { q: "Quale affermazione sugli stakeholder è corretta?", o: ["Solo gli stakeholder interni influenzano il successo del progetto", "Uno stakeholder può essere sia influenzato dal progetto sia influenzarne il successo positivamente o negativamente", "Gli stakeholder esterni non hanno potere reale sul progetto", "Il PM non deve occuparsi degli stakeholder con basso interesse"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 10 — Scope Management",
+    title: "Pianificazione, WBS e gestione dell'ambito",
+    qs: [
+      { q: "Un Project Manager ha pianificato solo ad alto livello le attività dei prossimi 6 mesi, rimandando il dettaglio a quando saranno più vicine. Quale tecnica sta applicando?", o: ["Scope Creep controllato", "Rolling Wave Planning", "WBS Decomposition completa", "Critical Path Method"], c: 1 },
+      { q: "Durante un progetto di sviluppo software, il cliente chiede di aggiungere una funzione non prevista senza modificare formalmente il contratto. Il PM la inserisce silenziosamente nella WBS. Qual è il problema?", o: ["Nessun problema: il PM sta servendo il cliente", "È un caso di Scope Creep: la modifica non è stata formalmente approvata e potrebbe impattare tempi e costi", "È corretto perché la WBS può essere modificata liberamente", "È un esempio di Gold Plating accettabile"], c: 1 },
+      { q: "La WBS è considerata uno 'strumento etico' dal PMI perché:", o: ["Elimina qualsiasi ambiguità tecnica nel progetto", "Rende visibile e trasparente a tutti gli stakeholder il contenuto del progetto, favorendo la comprensione condivisa dello scope", "Vincola il cliente a non richiedere modifiche", "Permette al PM di controllare il team senza riunioni frequenti"], c: 1 },
+      { q: "Quale affermazione sul Work Package è corretta?", o: ["È il livello più alto della WBS e descrive il deliverable principale", "È l'ultimo elemento della WBS e può contenere attività; per esso è terminata la scomposizione gerarchica", "Non può essere ulteriormente scomposto in nessun caso", "Ha sempre una durata massima di un giorno lavorativo"], c: 1 },
+      { q: "Secondo la Regola del 100%, se un nodo WBS 'Documentazione' viene scomposto in 'Manuale Utente' e 'Manuale Tecnico', cosa deve essere verificato?", o: ["Che i due documenti abbiano la stessa durata di realizzazione", "Che l'insieme dei due deliverable copra il 100% del lavoro del nodo padre, senza aggiungere né tralasciare nulla", "Che ogni deliverable sia assegnato a un team diverso", "Che la somma dei costi dei due deliverable non superi il budget del nodo padre"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 11 — Schedule Management",
+    title: "Attività, milestone, stime, legami e CPM",
+    qs: [
+      { q: "Un'attività ha descrizione 'Completare la progettazione'. Perché non rispetta i criteri di una buona attività di progetto?", o: ["È troppo breve per essere gestibile", "Non è misurabile: non definisce un output concreto e verificabile", "Non è assegnata a un responsabile", "Ha una durata troppo lunga per essere controllabile"], c: 1 },
+      { q: "Un PM stima la durata di un'attività complessa usando i dati storici di un progetto simile realizzato 2 anni fa. Quale tecnica di stima sta usando?", o: ["Stima Parametrica", "Stima Bottom-Up", "Stima per Analogia", "PERT"], c: 2 },
+      { q: "Con la tecnica PERT, una attività ha tO=2, tM=5, tP=14 giorni. Qual è la durata attesa?", o: ["7 giorni", "6 giorni", "5,5 giorni", "21 giorni"], c: 1 },
+      { q: "In un progetto edilizio, la verniciatura delle pareti non può iniziare prima che l'intonaco sia completamente asciutto (3 giorni dopo il termine dell'intonacatura). Quale combinazione di legame e lag descrive correttamente questa situazione?", o: ["Legame SS con lag +3", "Legame FS con lag +3", "Legame FF con lead -3", "Legame SF con lag +3"], c: 1 },
+      { q: "Un'attività ha ES=3, EF=8, LS=6, LF=11. Qual è il Total Float e l'attività è critica?", o: ["TF=3, non critica", "TF=0, critica", "TF=5, non critica", "TF=2, non critica"], c: 0 },
+      { q: "Il PM di un progetto in ritardo decide di far partire il collaudo (testing) mentre lo sviluppo è ancora in corso, invece di aspettarne il completamento. Quale tecnica di compressione sta applicando e quale rischio introduce?", o: ["Crashing: rischio di aumento dei costi", "Fast Tracking: rischio di dover rifare il lavoro di collaudo se lo sviluppo cambia", "Rolling Wave Planning: rischio di scope creep", "Critical Path Method: nessun rischio aggiuntivo"], c: 1 },
+      { q: "In una schedulazione a risorse limitate, cosa succede se una risorsa è in sovraccarico (overallocation)?", o: ["Il PM deve eliminare le attività meno prioritarie", "Bisogna modificare la schedulazione per livellare il carico: spostando attività non critiche o aggiungendo risorse", "Il progetto viene automaticamente cancellato", "Lo Sponsor deve approvare straordinari illimitati"], c: 1 },
+    ]
+  }
+];
+
+// Flatten
+const allQ = [];
+sections.forEach((s, si) => s.qs.forEach((q, qi) => allQ.push({ ...q, si, qi })));
+const TOTAL = allQ.length;
+let answers = Array(TOTAL).fill(null);
+
+// Update stat
+document.getElementById('s-total').textContent = TOTAL;
+document.getElementById('prog-count').textContent = `0 / ${TOTAL}`;
+
+function build() {
+  const body = document.getElementById('quiz-body');
+  body.innerHTML = '';
+  let gi = 0;
+  sections.forEach(sec => {
+    const sh = document.createElement('div');
+    sh.className = 'sec-head';
+    sh.innerHTML = `<div class="sec-chip">${sec.chip}</div><div class="sec-title">${sec.title}</div>`;
+    body.appendChild(sh);
+    const wrap = document.createElement('div');
+    wrap.className = 'cards';
+    sec.qs.forEach((q, _) => {
+      const i = gi;
+      const card = document.createElement('div');
+      card.className = 'qcard';
+      card.innerHTML = `
+        <div class="qnum">Domanda ${i+1} di ${TOTAL}</div>
+        <div class="qtext">${q.q}</div>
+        ${q.o.map((op, j) => `
+          <div class="opt" id="o-${i}-${j}" onclick="pick(${i},${j})">
+            <input type="radio" name="q${i}">
+            <div class="opt-l">${String.fromCharCode(65+j)}</div>
+            <label>${op}</label>
+          </div>`).join('')}
+      `;
+      wrap.appendChild(card);
+      gi++;
+    });
+    body.appendChild(wrap);
+  });
+}
+
+function pick(qi, oi) {
+  answers[qi] = oi;
+  for (let j = 0; j < allQ[qi].o.length; j++)
+    document.getElementById(`o-${qi}-${j}`).classList.remove('selected');
+  document.getElementById(`o-${qi}-${oi}`).classList.add('selected');
+  const done = answers.filter(a => a !== null).length;
+  document.getElementById('prog-fill').style.width = (done/TOTAL*100) + '%';
+  document.getElementById('prog-count').textContent = `${done} / ${TOTAL}`;
+  document.getElementById('submit-btn').disabled = done < TOTAL;
+}
+
+function submit() {
+  let score = 0;
+  const wrong = [];
+  allQ.forEach((q, i) => {
+    const c = q.c, ch = answers[i];
+    for (let j = 0; j < q.o.length; j++) {
+      const el = document.getElementById(`o-${i}-${j}`);
+      el.style.pointerEvents = 'none';
+      if (j === c) el.classList.add('correct');
+      else if (j === ch) el.classList.add('wrong');
+    }
+    if (ch === c) score++;
+    else wrong.push({ n: i+1, q: q.q, y: q.o[ch], c: q.o[c] });
+  });
+
+  document.getElementById('submit-btn').style.display = 'none';
+  const pct = Math.round(score / TOTAL * 100);
+  const circle = document.getElementById('res-circle');
+  circle.textContent = pct + '%';
+  circle.className = 'res-circle ' + (pct >= 70 ? 'rg' : pct >= 50 ? 'rm' : 'rb');
+  document.getElementById('res-title').textContent = pct >= 80 ? '🎉 Ottimo risultato!' : pct >= 60 ? '👍 Quasi, puoi migliorare!' : '📚 Ripassia ancora un po\'!';
+  document.getElementById('res-sub').textContent = `Capitoli 1–11 · ${score}/${TOTAL} risposte corrette`;
+  document.getElementById('rs-ok').textContent = score;
+  document.getElementById('rs-no').textContent = TOTAL - score;
+  document.getElementById('rs-pct').textContent = pct + '%';
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+  fetchFeedback(score, pct, wrong);
+  buildErrors(wrong);
+}
+
+async function fetchFeedback(score, pct, wrong) {
+  const ws = wrong.length === 0 ? 'Nessun errore!' :
+    wrong.slice(0,8).map(w => `- D${w.n}: "${w.q.substring(0,55)}…" → Tua: "${w.y}" (corretta: "${w.c}")`).join('\n');
+
+  const prompt = `Sei un professore di Project Management. Uno studente ha completato un quiz sui capitoli 1-11 del corso (definizioni fondamentali, programma/portfolio, tipologie di progetti, metodologia PM, ruoli PMO/PM/Sponsor, vincoli, cause di fallimento, processi di avvio, stakeholder, Project Charter, Scope Management/WBS, Schedule Management/CPM) ottenendo ${score}/${TOTAL} (${pct}%).
+
+Errori principali:\n${ws}
+
+Scrivi un feedback preciso di 5 righe in italiano: incoraggiante, individua i concetti su cui lo studente deve concentrarsi di più e dai un consiglio pratico. Sii diretto.`;
+
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [{ role: "user", content: prompt }] })
+    });
+    const d = await r.json();
+    document.getElementById('fb-text').textContent = d.content?.find(b => b.type === 'text')?.text || "Feedback non disponibile.";
+  } catch { document.getElementById('fb-text').textContent = "Feedback non disponibile al momento."; }
+}
+
+function reset() {
+  answers = Array(TOTAL).fill(null);
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('submit-btn').style.display = 'block';
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('prog-fill').style.width = '0%';
+  document.getElementById('prog-count').textContent = `0 / ${TOTAL}`;
+  build();
+  window.scrollTo(0, 0);
+}
+
+function buildErrors(wrong) {
+  const box = document.getElementById('errors-box');
+  if (wrong.length === 0) {
+    box.innerHTML = '<div class="no-errors">✅ Perfetto! Nessun errore commesso.</div>';
+    return;
+  }
+  let html = '<div class="errors-title">❌ Risposte errate (' + wrong.length + ')</div>';
+  wrong.forEach(w => {
+    html += `
+      <div class="err-item">
+        <div class="err-num">Domanda ${w.n}</div>
+        <div class="err-question">${w.q}</div>
+        <div class="err-row">
+          <span class="err-badge wrong-badge">Tua risposta</span>
+          <span class="err-answer">${w.y}</span>
+        </div>
+        <div class="err-row">
+          <span class="err-badge correct-badge">Risposta corretta</span>
+          <span class="err-answer correct-ans">${w.c}</span>
+        </div>
+      </div>`;
+  });
+  box.innerHTML = html;
+}
+
+build();
+</script>
+</body>
+</html>

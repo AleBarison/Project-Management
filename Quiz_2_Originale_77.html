@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz 2 – Corso Completo (originale)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0b0d14; --surface: #13161f; --border: #252a3a; --border2: #2d3448;
+    --text: #e8eaf0; --muted: #6b7280; --dim: #9ca3af;
+    --accent: #f59e0b; --glow: rgba(245,158,11,0.1);
+  }
+  body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  .hero { background: linear-gradient(135deg, #1a1200 0%, #0b0d14 60%, #1a0a00 100%); padding: 52px 24px 40px; text-align: center; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 65%); pointer-events: none; }
+  .hero-tag { display: inline-block; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35); color: #fcd34d; font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 16px; border-radius: 99px; margin-bottom: 18px; }
+  .hero h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); font-weight: 900; color: #fff; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 12px; }
+  .hero h1 span { color: #fbbf24; }
+  .hero p { color: var(--muted); font-size: 0.95rem; max-width: 520px; margin: 0 auto 32px; line-height: 1.6; }
+  .stats-row { display: flex; justify-content: center; max-width: 380px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .stat { flex: 1; padding: 16px 8px; text-align: center; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-n { font-size: 1.5rem; font-weight: 800; color: #fbbf24; }
+  .stat-l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+  .prog-wrap { background: var(--surface); padding: 14px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .prog-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+  .prog-label { font-size: 0.78rem; color: var(--muted); }
+  .prog-count { font-size: 0.78rem; font-weight: 700; color: #fbbf24; }
+  .prog-bg { background: var(--border); border-radius: 99px; height: 5px; }
+  .prog-fill { background: linear-gradient(90deg, #f59e0b, #ef4444); height: 5px; border-radius: 99px; transition: width 0.35s ease; width: 0%; }
+
+  .cards { max-width: 720px; margin: 0 auto; padding: 24px; }
+  .qcard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; margin-bottom: 12px; transition: border-color 0.2s; }
+  .qcard:hover { border-color: var(--border2); }
+  .qnum { font-size: 0.7rem; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .qtext { font-size: 0.97rem; font-weight: 600; color: #f1f5f9; line-height: 1.55; margin-bottom: 14px; }
+
+  .opt { display: flex; align-items: flex-start; gap: 12px; padding: 11px 14px; border-radius: 9px; border: 1.5px solid var(--border2); margin-bottom: 7px; cursor: pointer; transition: all 0.18s; }
+  .opt:hover { border-color: #f59e0b; background: var(--glow); }
+  .opt.selected { border-color: #f59e0b; background: var(--glow); }
+  .opt.correct { border-color: #10b981; background: rgba(16,185,129,0.08); }
+  .opt.wrong   { border-color: #ef4444; background: rgba(239,68,68,0.08); }
+  .opt input[type=radio] { display: none; }
+  .opt-l { width: 22px; height: 22px; border-radius: 6px; background: var(--border2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: var(--muted); flex-shrink: 0; transition: all 0.18s; }
+  .opt.selected .opt-l { background: #f59e0b; color: #000; }
+  .opt.correct  .opt-l { background: #10b981; color: #fff; }
+  .opt.wrong    .opt-l { background: #ef4444; color: #fff; }
+  .opt label { cursor: pointer; font-size: 0.9rem; color: #cbd5e1; line-height: 1.45; }
+
+  .footer { max-width: 720px; margin: 0 auto; padding: 16px 24px 48px; }
+  .submit-btn { display: block; width: 100%; padding: 15px; background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+  .submit-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  .submit-btn:disabled { background: var(--border2); color: var(--muted); cursor: not-allowed; transform: none; }
+
+  #result { display: none; max-width: 620px; margin: 0 auto; padding: 32px 24px 60px; }
+  .res-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 36px 28px; text-align: center; }
+  .res-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.9rem; font-weight: 800; }
+  .rg { background: rgba(16,185,129,0.1); color: #10b981; border: 3px solid #10b981; }
+  .rm { background: rgba(245,158,11,0.1); color: #f59e0b; border: 3px solid #f59e0b; }
+  .rb { background: rgba(239,68,68,0.1); color: #ef4444; border: 3px solid #ef4444; }
+  .res-title { font-size: 1.35rem; font-weight: 800; color: #f1f5f9; margin-bottom: 6px; }
+  .res-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .res-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; }
+  .rs { text-align: center; }
+  .rs-n { font-size: 1.5rem; font-weight: 800; }
+  .rs-n.g { color: #10b981; } .rs-n.r { color: #ef4444; } .rs-n.b { color: #fbbf24; }
+  .rs-l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .fb-box { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-align: left; margin-bottom: 22px; }
+  .fb-title { font-size: 0.72rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .fb-text { font-size: 0.88rem; color: var(--dim); line-height: 1.7; }
+  .loading { font-style: italic; color: var(--muted); }
+  .errors-box { margin-top: 20px; text-align: left; }
+  .errors-title { font-size: 0.8rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .err-item { background: var(--bg); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+  .err-num { font-size: 0.68rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .err-question { font-size: 0.88rem; font-weight: 600; color: #e2e8f0; margin-bottom: 10px; line-height: 1.45; }
+  .err-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+  .err-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .err-badge.wb { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+  .err-badge.cb { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .err-answer { font-size: 0.85rem; color: var(--dim); line-height: 1.4; }
+  .err-answer.ca { color: #6ee7b7; font-weight: 500; }
+  .no-errors { text-align: center; padding: 20px; color: #10b981; font-size: 0.95rem; font-weight: 600; }
+  .res-btns { display: flex; gap: 12px; }
+  .btn-retry { flex: 1; padding: 13px; background: none; border: 1.5px solid var(--border2); color: var(--dim); border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+  .btn-retry:hover { border-color: #f59e0b; color: #fbbf24; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Quiz Completo Originale</div>
+  <h1>Quiz 2 – <span>Corso Completo</span></h1>
+  <p>77 domande su tutti gli argomenti del corso: definizioni, WBS, schedulazione, rischi, qualità, costi, comunicazione, sicurezza, changeover, EVM, Agile e Scrum.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n">77</div><div class="stat-l">Domande</div></div>
+    <div class="stat"><div class="stat-n">70%</div><div class="stat-l">Per passare</div></div>
+    <div class="stat"><div class="stat-n">30</div><div class="stat-l">Capitoli</div></div>
+  </div>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-top">
+    <span class="prog-label">Avanzamento</span>
+    <span class="prog-count" id="prog-count">0 / 77</span>
+  </div>
+  <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+</div>
+
+<div class="cards" id="quiz-body"></div>
+
+<div class="footer">
+  <button class="submit-btn" id="submit-btn" onclick="submitQuiz()" disabled>Consegna il Quiz</button>
+</div>
+
+<div id="result">
+  <div class="res-card">
+    <div class="res-circle" id="res-circle"></div>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-sub" id="res-sub"></div>
+    <div class="res-stats">
+      <div class="rs"><div class="rs-n g" id="rs-ok">-</div><div class="rs-l">Corrette</div></div>
+      <div class="rs"><div class="rs-n r" id="rs-no">-</div><div class="rs-l">Errate</div></div>
+      <div class="rs"><div class="rs-n b" id="rs-pct">-</div><div class="rs-l">Punteggio</div></div>
+    </div>
+    <div class="fb-box">
+      <div class="fb-title">💬 Feedback personalizzato</div>
+      <div class="fb-text" id="fb-text"><span class="loading">Generazione in corso…</span></div>
+    </div>
+    <div class="errors-box" id="errors-box"></div>
+    <div class="res-btns">
+      <button class="btn-retry" onclick="resetQuiz()">🔄 Riprova</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+      { q: "Qual è l'obiettivo principale di un Portfolio?", o: ["Raggruppare progetti identici per semplificarne la gestione", "Minimizzare il rischio complessivo e massimizzare il rendimento allineando le iniziative alla strategia aziendale", "Assegnare un unico PM a tutti i progetti attivi", "Standardizzare i processi di ogni singolo progetto"], c: 1 },
+      { q: "Quale è un esempio corretto di Programma?", o: ["Un progetto software con molti moduli", "Il Programma Apollo: missioni distinte tutte finalizzate a portare l'uomo sulla Luna", "Un portfolio di investimenti aziendali", "Un insieme di processi operativi ripetitivi"], c: 1 },
+      { q: "Secondo ISO 9000:2015, un Processo è:", o: ["Un'iniziativa temporanea per creare un risultato unico", "Un insieme di attività correlate che trasformano elementi in ingresso in elementi in uscita", "Un piano strategico per raggiungere gli obiettivi aziendali", "Una struttura gerarchica di deliverable e attività"], c: 1 },
+      { q: "In un progetto 'guidato da capitolato (gara)', le specifiche tecniche sono:", o: ["Definite liberamente dal Project Manager", "Co-progettate iterativamente con il cliente", "Definite nel capitolato tramite procedura di gara d'appalto", "Stabilite dal Marketing in base ai trend di mercato"], c: 2 },
+      { q: "La complessità di un progetto dipende da:", o: ["Solo dalla complessità tecnica delle soluzioni", "Complessità tecnica, organizzativa, numero di progetti contemporanei e condivisione risorse", "Solo dal numero di risorse coinvolte", "Si riduce automaticamente con software di PM"], c: 1 },
+      { q: "Il PMO è responsabile di:", o: ["Eseguire direttamente le attività operative dei progetti", "Standardizzare i processi, diffondere le best practice e gestire il portafoglio", "Negoziare i contratti con i clienti esterni", "Approvare i budget dei singoli progetti"], c: 1 },
+      { q: "Quale NON è un pilastro del Project Management secondo il PMBOK?", o: ["Conoscenze", "Capacità", "Profitto", "Tecniche"], c: 2 },
+      { q: "Se si aumenta l'ambito (Scope) senza modificare altro, cosa accade?", o: ["I costi diminuiscono per economie di scala", "Potrebbero aumentare i tempi o i costi per l'interdipendenza del Triplo Vincolo", "La qualità migliora automaticamente", "Il rischio si riduce"], c: 1 },
+      { q: "Lo Scope Creep è una causa di fallimento perché:", o: ["Aumenta la comunicazione con gli stakeholder", "Espande il lavoro senza adeguare tempi, costi e risorse, compromettendo il progetto", "Riduce i deliverable da produrre", "Migliora la qualità finale del prodotto"], c: 1 },
+      { q: "Quale certificazione rilascia il PMI?", o: ["ICB – Individual Competence Baseline", "PMP – Project Management Professional", "PRINCE2 Practitioner", "Scrum Master Certified"], c: 1 },
+      { q: "L'IPMA ha sede in:", o: ["USA", "UK", "Svizzera", "Germania"], c: 2 },
+      { q: "Un vincolo di progetto è:", o: ["Un obiettivo da raggiungere entro la fine del progetto", "Una restrizione o limitazione interna o esterna che influisce sulle prestazioni del progetto", "Una risorsa chiave assegnata al progetto", "Un rischio ad alta probabilità già identificato"], c: 1 },
+      { q: "Quale best practice previene i fallimenti di progetto?", o: ["Evitare il monitoraggio per non rallentare l'esecuzione", "Gestire formalmente le modifiche all'ambito e allocare risorse adeguate", "Delegare interamente la pianificazione al team operativo", "Ridurre il numero di stakeholder per semplificare la comunicazione"], c: 1 },
+      { q: "Quale contenuto NON è tipicamente nel Project Charter?", o: ["Obiettivi misurabili di progetto", "Il dettaglio di tutte le attività con durate stimate", "Prima analisi dei rischi", "Stima di impegno del personale e dei costi"], c: 1 },
+      { q: "Gli stakeholder 'Operativi' nella matrice Potere/Interesse hanno:", o: ["Alto Potere e Alto Interesse", "Alto Potere e Basso Interesse", "Basso Potere e Alto Interesse", "Basso Potere e Basso Interesse"], c: 2 },
+      { q: "La Regola del 100% nella WBS stabilisce che:", o: ["Ogni attività deve essere completata al 100% prima di passare alla successiva", "Ogni nodo deve essere scomposto con tutti i deliverable che lo compongono, senza aggiungere né tralasciare lavoro", "Il Work Package deve avere sempre una durata di 100 ore", "L'ultimo livello deve contenere esattamente 100 attività"], c: 1 },
+      { q: "Quale funzione ha la WBS come strumento etico secondo il PMI?", o: ["Permette al PM di controllare il team senza riunioni", "Fornisce visibilità del contenuto del progetto a tutti gli stakeholder", "Nasconde le informazioni sensibili agli stakeholder esterni", "Riduce il numero di modifiche richieste"], c: 1 },
+      { q: "Un Planning Package nella WBS è:", o: ["L'ultimo nodo scomponibile in attività operative", "Un nodo che momentaneamente non può essere dettagliato perché si colloca nel lungo termine", "Il deliverable principale del progetto", "Un'attività assegnata a più responsabili"], c: 1 },
+      { q: "La stima per Analogia è:", o: ["La tecnica più accurata con molti dati storici", "Una tecnica approssimativa che usa dati storici di progetti simili, meno costosa e più veloce", "Una stima aggregata dai componenti inferiori della WBS", "Una tecnica che moltiplica la quantità di lavoro per le ore necessarie"], c: 1 },
+      { q: "La stima Bottom-Up aggrega:", o: ["I dati storici di progetti simili per stimare la durata totale", "Le stime dei componenti di livello inferiore della WBS fino al totale del progetto", "Solo le attività del cammino critico", "Le stime ottimistica, pessimistica e più probabile"], c: 1 },
+      { q: "Nella distribuzione triangolare (stima a 3 valori) la formula è:", o: ["tE = (tO + 4tM + tP) / 6", "tE = (tO + tM + tP) / 3", "tE = tM × 2", "tE = (tO + tP) / 2"], c: 1 },
+      { q: "Il legame Start to Start (SS) significa:", o: ["Il successore non può terminare prima che termini il predecessore", "Il successore non può iniziare prima che sia avviato il predecessore", "Il successore non può terminare prima che sia avviato il predecessore", "Il successore non può iniziare prima che termini il predecessore"], c: 1 },
+      { q: "Il legame Start to Finish (SF):", o: ["È il più frequentemente usato", "È raramente usato: il successore non può terminare prima che sia avviata l'attività predecessore", "È usato per porre attività in parallelo sulla fine", "È equivalente al Finish to Start"], c: 1 },
+      { q: "Il Free Float (FF) si calcola come:", o: ["LS – ES", "LF – EF", "MIN(ES successore) – EF – 1", "EF – ES – Durata"], c: 2 },
+      { q: "Il Crashing (compressione dei tempi) comporta:", o: ["Mettere attività in parallelo aumentando i rischi", "Eliminare attività non critiche dallo scope", "Aumentare le risorse sulle attività critiche con probabile aumento dei costi", "Ridurre la qualità per rispettare le scadenze"], c: 2 },
+      { q: "L'istogramma delle risorse mostra:", o: ["Le relazioni logiche tra le attività", "La quantità di tempo che una risorsa è chiamata a lavorare in un arco temporale", "Il costo cumulativo del progetto nel tempo", "Il numero di milestone raggiunte per periodo"], c: 1 },
+      { q: "La Risk Breakdown Structure (RBS) serve a:", o: ["Scomporre le attività di progetto in elementi gestibili", "Raggruppare i rischi in categorie gerarchiche per facilitarne l'identificazione", "Calcolare il livello di rischio di ogni attività", "Assegnare le responsabilità di gestione dei rischi"], c: 1 },
+      { q: "L'analisi SWOT nel Risk Management esamina:", o: ["Solo punti di debolezza e minacce esterne", "Punti di forza, debolezza, opportunità e minacce per identificare rischi e opportunità", "Solo le opportunità derivanti dai punti di forza", "Le minacce dei concorrenti e le opportunità di mercato"], c: 1 },
+      { q: "Nell'analisi qualitativa dei rischi, il livello è determinato da:", o: ["Solo dalla probabilità stimata dell'evento", "Solo dall'impatto economico sull'attività", "Dalla combinazione di probabilità e impatto", "Dal numero di rischi identificati"], c: 2 },
+      { q: "La strategia 'Mitigare' per i rischi negativi consiste nel:", o: ["Eliminare completamente la causa del rischio", "Trasferire il rischio a terzi tramite assicurazione", "Ridurre la probabilità e/o l'impatto dell'evento rischioso", "Accantonare una riserva per coprire le conseguenze"], c: 2 },
+      { q: "Per i rischi positivi, la strategia 'Condividere' prevede:", o: ["Assegnare le risorse migliori per massimizzare la probabilità", "Stipulare accordi di partnership per sfruttare l'opportunità insieme", "Monitorare proattivamente senza intervenire", "Accettare l'opportunità senza azioni specifiche"], c: 1 },
+      { q: "La Contingency Response Strategy consiste nel:", o: ["Eliminare il rischio dalla pianificazione", "Accantonare una riserva economica o temporale da attivare al verificarsi del rischio", "Trasferire il rischio a un fornitore esterno", "Ridurre l'ambito per limitare l'esposizione"], c: 1 },
+      { q: "La risposta ai rischi può impattare su:", o: ["Solo il budget", "Solo la schedulazione", "Scope, costi e tempi del progetto", "Solo la qualità dei deliverable"], c: 2 },
+      { q: "Il Benchmarking nella gestione della qualità è:", o: ["Il confronto tra le prassi del progetto e quelle di altri progetti presi come riferimento", "La valutazione della soddisfazione del cliente a fine progetto", "Un metodo per calcolare il costo della non-qualità", "La verifica della conformità dei deliverable ai requisiti"], c: 0 },
+      { q: "La Make or Buy Analysis considera:", o: ["Solo i costi diretti del prodotto acquistato", "Costi diretti, costi indiretti e strategie aziendali", "Solo la disponibilità del fornitore e i tempi di consegna", "Solo le competenze interne disponibili"], c: 1 },
+      { q: "Le stime definitive dei costi hanno un'accuratezza di:", o: ["Da -25% a +75%", "Da -10% a +25%", "Da -5% a +10%", "Da -1% a +5%"], c: 2 },
+      { q: "La Cost Baseline si calcola come:", o: ["Cost Estimate + Management Reserve", "Cost Estimate + Contingency Reserve", "Project Budget – Management Reserve", "Project Budget + Contingency Reserve"], c: 1 },
+      { q: "La comunicazione Para-Verbale comprende:", o: ["Le parole del messaggio scritto o parlato", "Tono della voce, velocità, timbro, volume e punteggiatura", "Postura, movimenti e modo di vestirsi", "Il contenuto delle email e dei documenti formali"], c: 1 },
+      { q: "La formula per i canali di comunicazione in un team di n persone è:", o: ["n × 2", "n × (n+1) / 2", "n × (n-1) / 2", "n² / 2"], c: 2 },
+      { q: "Quale best practice della comunicazione nel PM è corretta?", o: ["Deve essere spontanea per essere autentica", "Deve essere progettata, non improvvisata, e necessita di strumenti e competenze", "È sufficiente comunicare solo quando sorgono problemi", "La comunicazione scritta è sempre più efficace di quella verbale"], c: 1 },
+      { q: "Quale tipo di comunicazione ha il maggior impatto secondo Mehrabian?", o: ["Verbale (parole): 55%", "Para-verbale (tono): 55%", "Non-verbale (linguaggio del corpo): 55%", "Scritta: 55%"], c: 2 },
+      { q: "Il principio di Availability (Disponibilità) garantisce:", o: ["La segretezza dei dati sensibili", "La correttezza e integrità dei dati", "L'accesso tempestivo e affidabile alle informazioni quando necessario", "L'autenticazione sicura degli utenti"], c: 2 },
+      { q: "L'autenticazione basata su Biometrics utilizza:", o: ["Password e PIN", "Token e badge fisici", "Impronte digitali e scansione dell'iride", "Indirizzi IP e numeri seriali dei dispositivi"], c: 2 },
+      { q: "L'RTO dipende principalmente da:", o: ["Quanti dati storici sono necessari", "Quanto un processo è critico per la creazione di valore aziendale", "Il costo del sistema di backup", "Il numero di utenti che accedono al sistema"], c: 1 },
+      { q: "Il Changeover Parallelo ha come svantaggio:", o: ["È il metodo più rischioso in caso di rollback", "Non permette al personale di formarsi sul nuovo sistema", "Il costo di mantenere e monitorare entrambi i sistemi contemporaneamente", "Rende impossibile verificare il nuovo sistema prima del go-live"], c: 2 },
+      { q: "Il Changeover per Fasi sostituisce:", o: ["Tutto il sistema in un'unica soluzione", "Singoli componenti o moduli progressivamente", "Il sistema solo in orari notturni", "Solo i dati mantenendo invariata l'interfaccia"], c: 1 },
+      { q: "La Performance Measurement Baseline (PMB) integra:", o: ["Solo Scope e Schedule", "Solo Schedule e Cost", "Scope + Schedule + Cost", "Scope + Cost + Quality"], c: 2 },
+      { q: "Il Kick-off Meeting si svolge quando:", o: ["Il Project Charter è stato firmato dallo Sponsor", "Il Piano di Progetto è stato approvato", "Il primo deliverable è stato completato", "Gli stakeholder hanno firmato il contratto"], c: 1 },
+      { q: "I Processi di Esecuzione hanno lo scopo di:", o: ["Definire l'ambito e pianificare le attività", "Completare il lavoro definito nel Piano di PM per soddisfare le specifiche", "Monitorare l'avanzamento e applicare azioni correttive", "Finalizzare tutte le attività e chiudere il progetto"], c: 1 },
+      { q: "La Leadership Democratica si caratterizza per:", o: ["Comunicazione unidirezionale e alto controllo", "Delega totale senza intervento", "Bidirezionalità comunicativa e consultazione continua del gruppo", "Grande energia e capacità di ispirare"], c: 2 },
+      { q: "La Leadership Carismatica si caratterizza per:", o: ["Non intervento diretto e delega totale", "Comunicazione unidirezionale con ordini", "Capacità di ispirare, grande energia, entusiasmo e forti convinzioni", "Massima attenzione ai risultati e gestione del conflitto"], c: 2 },
+      { q: "La Leadership Interazionale si caratterizza per:", o: ["Delega totale senza supervisione", "Massima attenzione a risultati e persone, gestione del conflitto e ascolto attivo", "Comunicazione unidirezionale e controllo stretto", "Focus esclusivo sugli obiettivi trascurando le relazioni"], c: 1 },
+      { q: "Il Team Building ha lo scopo di:", o: ["Formare tecnicamente i membri del team", "Costruire dinamiche positive per raggiungere gli obiettivi senza perdere di vista il benessere dei membri", "Selezionare i migliori profili tramite colloqui", "Ridurre i costi attraverso una migliore allocazione delle risorse"], c: 1 },
+      { q: "Il Monitoraggio del progetto consiste nel:", o: ["Applicare azioni correttive quando il progetto è in ritardo", "Raccogliere, convalidare e trasformare i dati di avanzamento in sintesi efficaci per il controllo", "Approvare formalmente i deliverable del team", "Aggiornare la baseline quando si verificano scostamenti"], c: 1 },
+      { q: "Il BAC (Budget at Completion) nell'EVM è:", o: ["Il costo sostenuto fino alla data corrente", "L'ammontare complessivo del valore pianificato: il PV totale del progetto", "La stima del costo rimanente per completare", "La differenza tra EV e AC"], c: 1 },
+      { q: "La formula EAC (Estimate at Completion) è:", o: ["EAC = PV + ETC", "EAC = BAC – EV", "EAC = AC + ETC", "EAC = EV + PV"], c: 2 },
+      { q: "Un SPI > 1 indica che il progetto è:", o: ["In ritardo rispetto alla schedulazione", "Sopra i costi previsti", "In anticipo rispetto alla schedulazione", "In linea con la schedulazione"], c: 2 },
+      { q: "La tecnica Weighted Milestone nell'EVM è adatta per:", o: ["Attività brevissime senza output intermedi", "Attività di PM senza output tangibili", "Attività di lunga durata con significativi prodotti intermedi", "Attività con correlazione diretta ad altri task"], c: 2 },
+      { q: "Nella tecnica Fixed Formula 0/100, l'intero valore viene assegnato:", o: ["All'inizio dell'attività", "A metà dell'attività", "Al completamento dell'attività", "Proporzionalmente durante tutta la durata"], c: 2 },
+      { q: "Un Report Assoluto fornisce:", o: ["Il confronto tra parametri in istanti diversi rispetto alla baseline", "Una fotografia in un dato istante di uno o più parametri, senza confronti temporali", "L'andamento nel tempo degli indici per identificare trend", "Un riepilogo di tutti i rischi attivi"], c: 1 },
+      { q: "Il Piano delle Milestone è utile per:", o: ["Il team operativo che gestisce le attività quotidiane", "La reportistica direzionale di alto livello con i traguardi chiave su timeline", "L'analisi dettagliata dei costi per Work Package", "Il monitoraggio giornaliero delle singole attività"], c: 1 },
+      { q: "Le attività fondamentali della chiusura includono:", o: ["Riaprire la negoziazione con i fornitori", "Verificare completezza, documentare l'accettazione formale, chiudere contratti e produrre lesson learned", "Assegnare immediatamente le risorse al progetto successivo", "Eliminare tutta la documentazione prodotta"], c: 1 },
+      { q: "Nell'approccio Waterfall il processo di consegna avviene:", o: ["In modo continuo con rilasci frequenti", "Solo alla fine del progetto, dopo che tutto il lavoro è completato", "Ad ogni Sprint con incrementi funzionanti", "In base alle richieste del cliente durante l'esecuzione"], c: 1 },
+      { q: "Il principio 7 del Manifesto Agile afferma che:", o: ["La priorità è soddisfare il cliente con rilasci continui", "Committenti e sviluppatori lavorano insieme quotidianamente", "Il software funzionante è il principale metro di misura di progresso", "La semplicità è essenziale"], c: 2 },
+      { q: "Scrum è descritto come:", o: ["Pesante ma molto preciso", "Leggero, semplice da comprendere ma difficile da padroneggiare", "Complesso da capire ma facile da applicare", "Rigido e prescrittivo come il Waterfall"], c: 1 },
+      { q: "Il framework Scrum è costituito da:", o: ["Solo ruoli e artefatti", "Ruoli, eventi, artefatti e regole che li legano", "Solo eventi e sprint pianificati", "Solo Product Backlog e Sprint Backlog"], c: 1 },
+      { q: "Il Product Owner è:", o: ["Il responsabile tecnico del Team di Sviluppo", "Una singola persona responsabile della massimizzazione del valore del prodotto e della gestione del Product Backlog", "Il facilitatore degli eventi Scrum", "Il rappresentante del management"], c: 1 },
+      { q: "Nello Sprint Planning la durata massima per uno Sprint di un mese è:", o: ["2 ore", "4 ore", "8 ore", "16 ore"], c: 2 },
+      { q: "Durante uno Sprint, le modifiche allo Sprint Goal:", o: ["Possono essere richieste dal cliente in qualsiasi momento", "Non possono essere fatte se mettono a rischio lo Sprint Goal", "Vengono valutate ogni giorno nel Daily Scrum", "Devono essere approvate dallo Scrum Master"], c: 1 },
+      { q: "Il Product Backlog viene progressivamente raffinato attraverso:", o: ["Lo Sprint Planning", "Il Grooming/Refinement: gli elementi vengono dettagliati man mano che si avvicina il momento della loro implementazione", "La Sprint Review", "Il Daily Scrum"], c: 1 },
+      { q: "Una User Story ha tipicamente la forma:", o: ["'Il sistema deve implementare la funzione X con le specifiche Y'", "'Come [tipo utente], voglio [obiettivo] in modo da [beneficio]'", "'Attività X: durata 3 giorni, assegnata a risorsa Y'", "'Milestone: completamento del modulo X entro la data Y'"], c: 1 },
+      { q: "Lo Sprint Backlog appartiene esclusivamente a:", o: ["Il Product Owner", "Lo Scrum Master", "Il Team di Sviluppo", "L'intera organizzazione"], c: 2 },
+      { q: "La Sprint Retrospective si svolge:", o: ["Prima della Sprint Review", "Dopo la Sprint Review e prima del prossimo Sprint Planning", "Durante il Daily Scrum dell'ultimo giorno", "Contemporaneamente alla Sprint Review"], c: 1 },
+      { q: "La durata massima della Sprint Review per uno Sprint di un mese è:", o: ["1 ora", "2 ore", "4 ore", "8 ore"], c: 2 },
+      { q: "Nel Burndown Chart la linea ideale mostra:", o: ["Come il costo aumenta progressivamente", "Come il lavoro dovrebbe diminuire costantemente se il team procede secondo il piano", "Il numero di bug trovati", "La velocità del team in story point per Sprint"], c: 1 },
+      { q: "Cosa rende l'Incremento 'potenzialmente rilasciabile' in Scrum?", o: ["Deve essere approvato formalmente dal Product Owner", "Deve soddisfare la Definition of Done ed essere in uno stato utilizzabile", "Deve essere testato da un team esterno di QA", "Deve contenere tutte le funzionalità del Product Backlog"], c: 1 },
+      { q: "Uno dei benefici principali del Daily Scrum è:", o: ["Sostituire le riunioni settimanali con il cliente", "Migliorare la comunicazione e creare un piano per le prossime 24 ore ispezionando il lavoro svolto", "Permettere allo Scrum Master di assegnare task giorno per giorno", "Aggiornare il Product Backlog con le priorità del Product Owner"], c: 1 },
+    ];
+
+const TOTAL = questions.length;
+let answers = Array(TOTAL).fill(null);
+
+function build() {
+  const body = document.getElementById("quiz-body");
+  body.innerHTML = "";
+  questions.forEach((q, i) => {
+    const card = document.createElement("div");
+    card.className = "qcard";
+    card.innerHTML = `
+      <div class="qnum">Domanda ${i+1} di ${TOTAL}</div>
+      <div class="qtext">${q.q}</div>
+      ${q.o.map((op, j) => `
+        <div class="opt" id="o-${i}-${j}" onclick="pick(${i},${j})">
+          <input type="radio" name="q${i}">
+          <div class="opt-l">${String.fromCharCode(65+j)}</div>
+          <label>${op}</label>
+        </div>`).join("")}
+    `;
+    body.appendChild(card);
+  });
+}
+
+function pick(qi, oi) {
+  answers[qi] = oi;
+  for (let j = 0; j < questions[qi].o.length; j++)
+    document.getElementById(`o-${qi}-${j}`).classList.remove("selected");
+  document.getElementById(`o-${qi}-${oi}`).classList.add("selected");
+  const done = answers.filter(a => a !== null).length;
+  document.getElementById("prog-fill").style.width = (done/TOTAL*100) + "%";
+  document.getElementById("prog-count").textContent = `${done} / ${TOTAL}`;
+  document.getElementById("submit-btn").disabled = done < TOTAL;
+}
+
+function submitQuiz() {
+  let score = 0;
+  const wrong = [];
+  questions.forEach((q, i) => {
+    const c = q.c, ch = answers[i];
+    for (let j = 0; j < q.o.length; j++) {
+      const el = document.getElementById(`o-${i}-${j}`);
+      el.style.pointerEvents = "none";
+      if (j === c) el.classList.add("correct");
+      else if (j === ch) el.classList.add("wrong");
+    }
+    if (ch === c) score++;
+    else wrong.push({ n: i+1, q: q.q, y: q.o[ch], c: q.o[c] });
+  });
+  document.getElementById("submit-btn").style.display = "none";
+  const pct = Math.round(score / TOTAL * 100);
+  const circle = document.getElementById("res-circle");
+  circle.textContent = pct + "%";
+  circle.className = "res-circle " + (pct >= 70 ? "rg" : pct >= 50 ? "rm" : "rb");
+  document.getElementById("res-title").textContent = pct >= 80 ? "🎉 Ottimo risultato!" : pct >= 60 ? "👍 Quasi, puoi migliorare!" : "📚 Ripassia ancora un po'!";
+  document.getElementById("res-sub").textContent = `Quiz 2 Originale · ${score}/${TOTAL} risposte corrette`;
+  document.getElementById("rs-ok").textContent = score;
+  document.getElementById("rs-no").textContent = TOTAL - score;
+  document.getElementById("rs-pct").textContent = pct + "%";
+  document.getElementById("result").style.display = "block";
+  document.getElementById("result").scrollIntoView({ behavior: "smooth" });
+  buildErrors(wrong);
+  fetchFeedback(score, pct, wrong);
+}
+
+function buildErrors(wrong) {
+  const box = document.getElementById("errors-box");
+  if (wrong.length === 0) { box.innerHTML = "<div class=\"no-errors\">✅ Perfetto! Nessun errore commesso.</div>"; return; }
+  let html = `<div class="errors-title">❌ Risposte errate (${wrong.length})</div>`;
+  wrong.forEach(w => {
+    html += `<div class="err-item"><div class="err-num">Domanda ${w.n}</div><div class="err-question">${w.q}</div><div class="err-row"><span class="err-badge wb">Tua risposta</span><span class="err-answer">${w.y}</span></div><div class="err-row"><span class="err-badge cb">Risposta corretta</span><span class="err-answer ca">${w.c}</span></div></div>`;
+  });
+  box.innerHTML = html;
+}
+
+async function fetchFeedback(score, pct, wrong) {
+  const ws = wrong.length === 0 ? "Nessun errore!" : wrong.slice(0,8).map(w => `- D${w.n}: "${w.q.substring(0,55)}…" → Tua: "${w.y}" (corretta: "${w.c}")`).join("\n");
+  const prompt = `Sei un professore di Project Management. Uno studente ha completato il Quiz 2 del corso (77 domande su tutti gli argomenti) ottenendo ${score}/${TOTAL} (${pct}%). Errori principali:\n${ws}\nScrivi un feedback di 5 righe in italiano: incoraggiante, indica cosa ripassare e dai un consiglio pratico. Sii diretto.`;
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [{ role: "user", content: prompt }] }) });
+    const d = await r.json();
+    document.getElementById("fb-text").textContent = d.content?.find(b => b.type === "text")?.text || "Feedback non disponibile.";
+  } catch { document.getElementById("fb-text").textContent = "Feedback non disponibile al momento."; }
+}
+
+function resetQuiz() {
+  answers = Array(TOTAL).fill(null);
+  document.getElementById("result").style.display = "none";
+  document.getElementById("submit-btn").style.display = "block";
+  document.getElementById("submit-btn").disabled = true;
+  document.getElementById("prog-fill").style.width = "0%";
+  document.getElementById("prog-count").textContent = `0 / ${TOTAL}`;
+  build();
+  window.scrollTo(0, 0);
+}
+
+build();
+</script>
+</body>
+</html>
