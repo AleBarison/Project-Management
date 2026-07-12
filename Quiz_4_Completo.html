@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz 4 – Corso Completo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0b0d14; --surface: #13161f; --border: #252a3a; --border2: #2d3448;
+    --text: #e8eaf0; --muted: #6b7280; --dim: #9ca3af;
+    --accent: #0ea5e9; --glow: rgba(14,165,233,0.1);
+  }
+  body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .hero { background: linear-gradient(135deg, #000d1a 0%, #0b0d14 60%, #001019 100%); padding: 52px 24px 40px; text-align: center; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: radial-gradient(circle, rgba(14,165,233,0.1) 0%, transparent 65%); pointer-events: none; }
+  .hero-tag { display: inline-block; background: rgba(14,165,233,0.1); border: 1px solid #0ea5e955; color: #38bdf8; font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 16px; border-radius: 99px; margin-bottom: 18px; }
+  .hero h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); font-weight: 900; color: #fff; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 12px; }
+  .hero h1 span { color: #38bdf8; }
+  .hero p { color: var(--muted); font-size: 0.95rem; max-width: 520px; margin: 0 auto 32px; line-height: 1.6; }
+  .stats-row { display: flex; justify-content: center; max-width: 420px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .stat { flex: 1; padding: 16px 8px; text-align: center; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-n { font-size: 1.5rem; font-weight: 800; color: #38bdf8; }
+  .stat-l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+  .prog-wrap { background: var(--surface); padding: 14px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .prog-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+  .prog-label { font-size: 0.78rem; color: var(--muted); }
+  .prog-count { font-size: 0.78rem; font-weight: 700; color: #38bdf8; }
+  .prog-bg { background: var(--border); border-radius: 99px; height: 5px; }
+  .prog-fill { background: linear-gradient(90deg, #0ea5e9, #6366f1); height: 5px; border-radius: 99px; transition: width 0.35s ease; width: 0%; }
+  .sec-head { max-width: 720px; margin: 0 auto; padding: 28px 24px 8px; }
+  .sec-chip { display: inline-flex; align-items: center; background: rgba(14,165,233,0.1); border: 1px solid #0ea5e944; color: #38bdf8; font-size: 0.7rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 6px; }
+  .sec-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-top: 6px; }
+  .cards { max-width: 720px; margin: 0 auto; padding: 8px 24px; }
+  .qcard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; margin-bottom: 12px; transition: border-color 0.2s; }
+  .qcard:hover { border-color: var(--border2); }
+  .qnum { font-size: 0.7rem; font-weight: 700; color: #0ea5e9; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .qtext { font-size: 0.97rem; font-weight: 600; color: #f1f5f9; line-height: 1.55; margin-bottom: 14px; }
+  .opt { display: flex; align-items: flex-start; gap: 12px; padding: 11px 14px; border-radius: 9px; border: 1.5px solid var(--border2); margin-bottom: 7px; cursor: pointer; transition: all 0.18s; }
+  .opt:hover { border-color: #0ea5e9; background: var(--glow); }
+  .opt.selected { border-color: #0ea5e9; background: var(--glow); }
+  .opt.correct { border-color: #10b981; background: rgba(16,185,129,0.08); }
+  .opt.wrong   { border-color: #ef4444; background: rgba(239,68,68,0.08); }
+  .opt input[type=radio] { display: none; }
+  .opt-l { width: 22px; height: 22px; border-radius: 6px; background: var(--border2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: var(--muted); flex-shrink: 0; transition: all 0.18s; }
+  .opt.selected .opt-l { background: #0ea5e9; color: #fff; }
+  .opt.correct  .opt-l { background: #10b981; color: #fff; }
+  .opt.wrong    .opt-l { background: #ef4444; color: #fff; }
+  .opt label { cursor: pointer; font-size: 0.9rem; color: #cbd5e1; line-height: 1.45; }
+  .footer { max-width: 720px; margin: 0 auto; padding: 16px 24px 48px; }
+  .submit-btn { display: block; width: 100%; padding: 15px; background: linear-gradient(135deg, #0ea5e9, #6366f1); color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+  .submit-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  .submit-btn:disabled { background: var(--border2); color: var(--muted); cursor: not-allowed; transform: none; }
+  #result { display: none; max-width: 620px; margin: 0 auto; padding: 32px 24px 60px; }
+  .res-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 36px 28px; text-align: center; }
+  .res-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.9rem; font-weight: 800; }
+  .rg { background: rgba(16,185,129,0.1); color: #10b981; border: 3px solid #10b981; }
+  .rm { background: rgba(245,158,11,0.1); color: #f59e0b; border: 3px solid #f59e0b; }
+  .rb { background: rgba(239,68,68,0.1); color: #ef4444; border: 3px solid #ef4444; }
+  .res-title { font-size: 1.35rem; font-weight: 800; color: #f1f5f9; margin-bottom: 6px; }
+  .res-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .res-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+  .rs { text-align: center; }
+  .rs-n { font-size: 1.5rem; font-weight: 800; }
+  .rs-n.g { color: #10b981; } .rs-n.r { color: #ef4444; } .rs-n.b { color: #38bdf8; }
+  .rs-l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .fb-box { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-align: left; margin-bottom: 22px; }
+  .fb-title { font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .fb-text { font-size: 0.88rem; color: var(--dim); line-height: 1.7; }
+  .loading { font-style: italic; color: var(--muted); }
+  .errors-box { margin-top: 20px; text-align: left; }
+  .errors-title { font-size: 0.8rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .err-item { background: var(--bg); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+  .err-num { font-size: 0.68rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .err-question { font-size: 0.88rem; font-weight: 600; color: #e2e8f0; margin-bottom: 10px; line-height: 1.45; }
+  .err-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+  .err-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .err-badge.wb { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+  .err-badge.cb { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .err-answer { font-size: 0.85rem; color: var(--dim); line-height: 1.4; }
+  .err-answer.ca { color: #6ee7b7; font-weight: 500; }
+  .no-errors { text-align: center; padding: 20px; color: #10b981; font-size: 0.95rem; font-weight: 600; }
+  .res-btns { display: flex; gap: 12px; }
+  .btn-retry { flex: 1; padding: 13px; background: none; border: 1.5px solid var(--border2); color: var(--dim); border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+  .btn-retry:hover { border-color: #0ea5e9; color: #38bdf8; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-tag">Quiz 4 · Fedele al testo</div>
+  <h1>Quiz 4 – <span>Corso Completo</span></h1>
+  <p>63 domande fedeli al testo del PDF: definizioni esatte, formule precise e termini tecnici così come compaiono nel materiale del corso.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="s-total">–</div><div class="stat-l">Domande</div></div>
+    <div class="stat"><div class="stat-n">30</div><div class="stat-l">Capitoli</div></div>
+    <div class="stat"><div class="stat-n">70%</div><div class="stat-l">Per passare</div></div>
+    <div class="stat"><div class="stat-n" id="s-done">0</div><div class="stat-l">Risposte</div></div>
+  </div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-top"><span class="prog-label">Avanzamento</span><span class="prog-count" id="prog-count">0 / –</span></div>
+  <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+</div>
+<div id="quiz-body"></div>
+<div class="footer">
+  <button class="submit-btn" id="submit-btn" onclick="submitQuiz()" disabled>Consegna il Quiz 4</button>
+</div>
+<div id="result">
+  <div class="res-card">
+    <div class="res-circle" id="res-circle"></div>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-sub" id="res-sub"></div>
+    <div class="res-stats">
+      <div class="rs"><div class="rs-n g" id="rs-ok">-</div><div class="rs-l">Corrette</div></div>
+      <div class="rs"><div class="rs-n r" id="rs-no">-</div><div class="rs-l">Errate</div></div>
+      <div class="rs"><div class="rs-n b" id="rs-pct">-</div><div class="rs-l">Punteggio</div></div>
+    </div>
+    <div class="fb-box">
+      <div class="fb-title">💬 Feedback personalizzato</div>
+      <div class="fb-text" id="fb-text"><span class="loading">Generazione in corso…</span></div>
+    </div>
+    <div class="errors-box" id="errors-box"></div>
+    <div class="res-btns"><button class="btn-retry" onclick="resetQuiz()">🔄 Riprova</button></div>
+  </div>
+</div>
+<script>
+const sections = [
+
+  {
+    chip: "Cap. 1–2 — Definizioni e Tipologie",
+    title: "Progetto, Processo, Programma, Portfolio e tipologie di progetto",
+    qs: [
+      { q: "Secondo il PMBOK (Sesta edizione), un Progetto è definito come:", o: ["Un processo ripetitivo finalizzato alla produzione di output standardizzati", "Un'iniziativa temporanea intrapresa per creare un prodotto, un servizio o un risultato con caratteristiche di unicità", "Un insieme di attività correlate che trasformano elementi in ingresso in elementi in uscita", "Un gruppo di progetti correlati gestiti in modo coordinato verso un obiettivo comune"], c: 1 },
+      { q: "Quale delle seguenti NON è una caratteristica distintiva di un Progetto?", o: ["Ha un inizio e una fine definiti", "Produce un risultato con caratteristiche di unicità", "È un'attività continuativa e ripetitiva", "Non esistono due progetti identici"], c: 2 },
+      { q: "Secondo la definizione ISO 9000:2015, un Processo è:", o: ["Un'iniziativa temporanea con inizio e fine definiti", "Un insieme di attività correlate o interagenti che trasformano elementi in ingresso in elementi in uscita", "Un gruppo di progetti finalizzati a un obiettivo strategico comune", "Un documento che descrive le fasi di realizzazione di un deliverable"], c: 1 },
+      { q: "In cosa differiscono Progetto e Processo relativamente all'output?", o: ["Il Progetto produce output standardizzati, il Processo produce output unici", "Il Progetto produce output con caratteristiche di unicità, il Processo produce output standardizzati", "Non vi è differenza: entrambi producono output misurabili", "Il Processo produce output più innovativi del Progetto"], c: 1 },
+      { q: "Un Programma è definito come:", o: ["Un singolo grande progetto suddiviso in fasi", "Un insieme di progetti non correlati gestiti dallo stesso Project Manager", "Un gruppo di progetti correlati gestiti in modo coordinato per raggiungere un obiettivo comune", "Un documento che descrive la strategia aziendale a lungo termine"], c: 2 }
+    ]
+  },
+
+  {
+    chip: "Cap. 3–4 — Metodologia e Ruoli",
+    title: "Project Management, PMO, Project Manager e Project Sponsor",
+    qs: [
+      { q: "Secondo il PMBOK, il Project Management è definito come:", o: ["La gestione del portafoglio aziendale per massimizzare il ritorno sugli investimenti", "L'applicazione di conoscenze, capacità, strumenti e tecniche alle attività di progetto per soddisfarne i requisiti", "L'insieme delle attività di pianificazione e controllo del ciclo di vita del progetto", "Il coordinamento delle risorse umane all'interno di un progetto complesso"], c: 1 },
+      { q: "Quali sono i quattro pilastri fondamentali del Project Management secondo il PMBOK?", o: ["Obiettivi, Deliverable, Stakeholder e Risorse", "Conoscenze, Capacità, Strumenti e Tecniche", "Pianificazione, Esecuzione, Monitoraggio e Chiusura", "Scope, Schedule, Cost e Quality"], c: 1 },
+      { q: "Il Project Management Office (PMO) è:", o: ["Il ruolo del Project Manager in progetti di grandi dimensioni", "Una struttura gestionale che standardizza i processi di gestione legati ai progetti e al portafoglio progetti", "Il comitato di approvazione dei budget di progetto", "Il documento che descrive le metodologie di project management adottate"], c: 1 },
+      { q: "Quale delle seguenti NON è una funzione del PMO?", o: ["Definire, monitorare e migliorare le metodologie di project management", "Facilitare la condivisione delle risorse tra progetti", "Gestire operativamente le attività quotidiane di ogni singolo progetto", "Raccogliere e diffondere best practice e lesson learned"], c: 2 },
+      { q: "Il Project Manager è paragonabile a un 'direttore di orchestra' secondo il PMBOK perché:", o: ["Deve saper suonare tutti gli strumenti del team in caso di necessità", "Coordina specialisti diversi verso un obiettivo comune senza eseguire direttamente ogni singola attività tecnica", "Ha autorità assoluta su tutte le decisioni del progetto senza consultare nessuno", "Valuta e sostituisce i membri del team che non performano adeguatamente"], c: 1 }
+    ]
+  },
+
+  {
+    chip: "Cap. 5–6 — Vincoli e Fallimenti",
+    title: "Triple Constraint e principali cause di insuccesso dei progetti",
+    qs: [
+      { q: "Il 'Triplo Vincolo' (Triple Constraint) del Project Management è composto da:", o: ["Risorse, Qualità e Comunicazione", "Tempo (Time), Costo (Cost) e Ambito (Scope)", "Rischi, Budget e Deliverable", "Stakeholder, Team e Sponsor"], c: 1 },
+      { q: "Secondo il materiale del corso, la qualità del lavoro è limitata da:", o: ["Il numero di risorse disponibili e le loro competenze", "Il budget del progetto, le scadenze e l'ambito", "Il livello di esperienza del Project Manager", "Le aspettative degli stakeholder esterni"], c: 1 },
+      { q: "Quale delle seguenti è una causa di fallimento dei progetti legata alla gestione delle modifiche?", o: ["Mancanza di commitment da parte della direzione", "Inadeguatezza del sistema informativo di gestione", "Cattiva gestione di richieste o modifiche (Scope Creep non controllato)", "Sottostima della complessità e dimensione del progetto"], c: 2 }
+    ]
+  },
+
+  {
+    chip: "Cap. 7–9 — Standard e Avvio",
+    title: "Organismi di riferimento, stakeholder e Project Charter",
+    qs: [
+      { q: "Il PMI (Project Management Institute) pubblica:", o: ["Lo standard ICB – Individual Competence Baseline", "La norma UNI ISO 21502:2021", "La Guida al PMBOK (Project Management Body of Knowledge)", "Il Manifesto Agile"], c: 2 },
+      { q: "La certificazione rilasciata dal PMI è:", o: ["ICB – Individual Competence Baseline", "PMP – Project Management Professional", "PRINCE2 Practitioner", "PSM – Professional Scrum Master"], c: 1 },
+      { q: "L'IPMA (International Project Management Association) è nata nel:", o: ["1969 con il nome di PMI", "1965 con il nome di INTERNET (INTERnational NETwork)", "1986 contestualmente alla prima edizione del PMBOK", "2001 con la pubblicazione del Manifesto Agile"], c: 1 },
+      { q: "Uno Stakeholder è definito come:", o: ["Solo le persone direttamente coinvolte nella realizzazione delle attività del progetto", "L'individuo, il gruppo o l'organizzazione che può essere influenzato o percepirsi interessato da una decisione, attività o risultato di un progetto", "Solo i clienti esterni che finanziano il progetto", "I membri del team di progetto e il Project Manager"], c: 1 },
+      { q: "Nella matrice Potere/Interesse, gli Stakeholder con Alto Potere e Alto Interesse sono classificati come:", o: ["Stakeholder Istituzionali", "Stakeholder Operativi", "Stakeholder Chiave", "Stakeholder Marginali"], c: 2 }
+    ]
+  },
+
+  {
+    chip: "Cap. 10–11 — WBS e Schedulazione",
+    title: "Scope Management, WBS, attività, stime, legami e CPM",
+    qs: [
+      { q: "La Work Breakdown Structure (WBS) è definita come:", o: ["Un diagramma che mostra le relazioni logiche tra le attività del progetto", "Una scomposizione gerarchica orientata ai deliverable del lavoro che il gruppo di progetto deve eseguire per conseguire gli obiettivi", "Un piano temporale che mostra le attività su un asse cronologico", "Un documento che elenca tutti gli stakeholder e il loro livello di interesse"], c: 1 },
+      { q: "Il Work Package nella WBS è:", o: ["Il deliverable principale che il progetto deve produrre", "Un nodo che momentaneamente non può essere dettagliato nei componenti inferiori", "Il nodo della WBS per il quale è terminata la scomposizione; è l'ultimo elemento (può contenere attività)", "Il livello più alto della WBS che descrive l'intera mission del progetto"], c: 2 },
+      { q: "La Regola del 100% nella WBS stabilisce che:", o: ["Ogni attività deve essere completata al 100% prima di passare alla successiva", "Ogni nodo deve essere scomposto includendo tutti i deliverable che lo compongono, senza aggiungere né tralasciare lavoro", "Il Work Package deve avere una durata massima di 100 ore lavorative", "L'ultimo livello della WBS deve contenere esattamente 100 attività"], c: 1 },
+      { q: "Lo 'Scope Creep' è definito come:", o: ["La tecnica di pianificazione progressiva che dettaglia i componenti della WBS nel tempo", "L'espansione non controllata dello scope del prodotto/servizio o progetto senza adeguare tempi, costi o risorse", "Il processo formale di modifica dell'ambito approvato dal PM e dallo Sponsor", "Un tipo di milestone che segna il completamento di una fase del progetto"], c: 1 },
+      { q: "Il Rolling Wave Planning (pianificazione a finestra mobile) consiste nel:", o: ["Pianificare tutte le attività nel dettaglio fin dall'inizio per avere massima visibilità", "Dettagliare i componenti al più basso livello della WBS per ciò che va completato a breve, pianificando solo ad alto livello per il lungo termine", "Comprimere la schedulazione mettendo attività in parallelo", "Aggiornare la baseline ogni volta che si verificano scostamenti significativi"], c: 1 },
+      { q: "Una Milestone è creata come:", o: ["Un'attività con durata pari alla fase che conclude", "Un'attività con effort pari a zero ma durata variabile", "Un'attività a durata zero che rappresenta un evento significativo nel progetto", "Un Work Package di livello superiore nella WBS"], c: 2 },
+      { q: "La formula della tecnica PERT per calcolare la durata attesa (tE) è:", o: ["tE = (tO + tM + tP) / 3", "tE = (tO + 4tM + tP) / 6", "tE = tM × (tO / tP)", "tE = (tO + 2tM + tP) / 4"], c: 1 }
+    ]
+  },
+
+  {
+    chip: "Cap. 12–13 — Risorse e Rischi",
+    title: "Resource Management e Risk Management",
+    qs: [
+      { q: "Nel modello Attività-Risorse, se una risorsa ha Duration 10 giorni e Lavoro 5 giorni/uomo, qual è la sua percentuale di impiego (FTE)?", o: ["100% (1 FTE)", "25% (0,25 FTE)", "50% (0,5 FTE)", "10% (0,1 FTE)"], c: 2 },
+      { q: "La differenza fondamentale tra un RISK e un PROBLEM (ISSUE) è:", o: ["Il Risk ha sempre impatto positivo, il Problem ha sempre impatto negativo", "Il Risk è un evento che può accadere nel futuro; il Problem è un evento che è già accaduto", "Il Risk riguarda i costi, il Problem riguarda i tempi di progetto", "Il Risk è gestito dal PM, il Problem è gestito dallo Sponsor"], c: 1 },
+      { q: "Secondo il PMBOK, il rischio è definito come:", o: ["Un evento negativo certo che avrà un impatto sul budget del progetto", "Un problema già verificatosi che richiede una soluzione immediata", "Un evento o condizione incerta che, se si verificasse, avrebbe un effetto positivo o negativo su uno o più obiettivi di progetto", "Una minaccia esterna identificata durante la fase di pianificazione iniziale"], c: 2 },
+      { q: "La formula del Risk Factor (livello di rischio) è:", o: ["Livello di rischio = Probabilità + Impatto", "Livello di rischio = Probabilità – Impatto", "Livello di rischio = Probabilità → Impatto (Probabilità × Impatto)", "Livello di rischio = Impatto / Probabilità"], c: 2 },
+      { q: "Quale strategia di risposta ai rischi negativi prevede di 'affidarsi a un fornitore la realizzazione di una parte rischiosa del progetto tramite contratto fixed-price'?", o: ["Evitare: si elimina la causa del rischio", "Mitigare: si riduce la probabilità o l'impatto", "Trasferire: si spostano le conseguenze su terzi", "Accettare: si studia il rischio senza intervenire"], c: 2 }
+    ]
+  },
+
+  {
+    chip: "Cap. 14–16 — Qualità, Procurement e Costi",
+    title: "Quality, Procurement e Cost Management",
+    qs: [
+      { q: "Secondo il PMBOK, la qualità è definita come:", o: ["Il rispetto delle specifiche tecniche definite nel capitolato di progetto", "Il grado di soddisfazione dei requisiti da parte di un insieme di caratteristiche specifiche", "L'assenza di difetti nel prodotto finale consegnato al cliente", "Il livello di eccellenza tecnica raggiunto dal team di sviluppo"], c: 1 },
+      { q: "Il 'Gold Plating' è:", o: ["Una tecnica di benchmarking per confrontarsi con i migliori del settore", "Il processo di validazione formale dei deliverable da parte del cliente", "Fornire funzionalità non richieste dal cliente che non aggiungono valore, incluso tra le cause di non-qualità", "Un metodo per aumentare il budget di contingency del progetto"], c: 2 },
+      { q: "La Make or Buy Analysis considera:", o: ["Esclusivamente il prezzo di acquisto del prodotto/servizio esterno", "I costi diretti (costo del prodotto acquistato), i costi indiretti (costi del processo di acquisto) e le strategie aziendali", "Solo la disponibilità del fornitore e i tempi di consegna previsti", "Unicamente le competenze interne disponibili nel team di progetto"], c: 1 },
+      { q: "La stima ROM (Rough Order of Magnitude) nella fase di avvio ha un'accuratezza di:", o: ["Da -5% a +10%", "Da -10% a +25%", "Da -25% a +75%", "Da -50% a +100%"], c: 2 },
+      { q: "La Contingency Reserve è:", o: ["Un importo trattenuto dalla direzione per gestire rischi non identificati ('unknown-unknown'), non incluso nella Cost Baseline", "Un costo incluso nella Cost Baseline allocato per i rischi identificati ('known-unknown')", "Un fondo di emergenza gestito esclusivamente dallo Sponsor del progetto", "Una percentuale fissa del 10% aggiunta automaticamente a tutte le stime di costo"], c: 1 }
+    ]
+  },
+
+  {
+    chip: "Cap. 17–18 — Comunicazione e Pianificazione",
+    title: "Communication Management e Piano di Progetto",
+    qs: [
+      { q: "Secondo il modello di Mehrabian, come è distribuito l'impatto della comunicazione?", o: ["55% verbale, 38% non-verbale, 7% para-verbale", "7% verbale (parole), 38% para-verbale (tono di voce), 55% non-verbale (linguaggio del corpo)", "38% verbale, 55% para-verbale, 7% non-verbale", "50% verbale, 30% para-verbale, 20% non-verbale"], c: 1 },
+      { q: "La formula per calcolare il numero di canali di comunicazione in un team di n persone è:", o: ["n × 2", "n × (n+1) / 2", "n(n-1) / 2", "n² / 2"], c: 2 },
+      { q: "Quanti canali di comunicazione esistono in un team di 4 persone?", o: ["4", "8", "6", "12"], c: 2 },
+      { q: "Quale percentuale del lavoro del Project Manager è rappresentata dalla comunicazione secondo il materiale del corso?", o: ["50%", "70%", "90%", "100%"], c: 2 }
+    ]
+  },
+
+  {
+    chip: "Cap. 19–20 — Sicurezza e Changeover",
+    title: "Triade CIA, autenticazione, RPO/RTO e tecniche di transizione",
+    qs: [
+      { q: "I tre principi fondamentali della sicurezza delle informazioni (triade CIA) sono:", o: ["Control, Integrity, Authentication", "Confidentiality (Riservatezza), Integrity (Integrità), Availability (Disponibilità)", "Confidentiality, Identification, Authorization", "Compliance, Integrity, Availability"], c: 1 },
+      { q: "Il principio di Confidentiality (Riservatezza) può essere garantito attraverso:", o: ["La crittografia end-to-end di tutti i dati aziendali", "Il principio del 'need to know' e il 'least privilege' (privilegio minimo)", "La duplicazione dei dati su server ridondanti", "L'autenticazione biometrica per tutti gli utenti"], c: 1 },
+      { q: "L'autenticazione 'basata sul possesso' (Ownership) utilizza:", o: ["Password e PIN numerici", "Token e badge fisici", "Impronte digitali e scansione dell'iride", "Indirizzi IP e numeri seriali dei dispositivi"], c: 1 },
+      { q: "L'autenticazione multifattore (MFA) è una 'strong authentication' perché:", o: ["Utilizza password molto lunghe e complesse difficili da indovinare", "Combina più di un tipo di autenticazione durante il processo di accesso, rendendo difficile la violazione", "Richiede l'intervento dell'amministratore di sistema per ogni accesso", "Usa esclusivamente dati biometrici che non possono essere falsificati"], c: 1 },
+      { q: "Il Recovery Point Objective (RPO) definisce:", o: ["In quanto tempo il sistema deve essere ripristinato dopo un'interruzione (system downtime)", "Quanti dati possono essere persi nel processo di recupero (data loss)", "Il costo massimo accettabile per il ripristino del sistema", "Il numero massimo di interruzioni tollerabili in un anno"], c: 1 }
+    ]
+  },
+
+  {
+    chip: "Cap. 21–22 — Baseline e Kick-off",
+    title: "Ciclo di pianificazione, tipi di baseline e riunione di avvio",
+    qs: [
+      { q: "La Baseline è definita come:", o: ["Il budget iniziale stimato prima dell'approvazione del Project Charter", "La versione approvata di un prodotto del lavoro, modificabile esclusivamente attraverso procedure formali di controllo delle modifiche, usata come base per il confronto", "Il report di stato avanzamento prodotto alla fine di ogni periodo di consolidamento", "La schedulazione aggiornata dopo ogni riunione di avanzamento del progetto"], c: 1 },
+      { q: "La Performance Measurement Baseline (PMB) integra:", o: ["Solo Scope e Schedule Baseline", "Solo Schedule e Cost Baseline", "Scope Baseline + Schedule Baseline + Cost Baseline", "Scope Baseline + Cost Baseline + Quality Baseline"], c: 2 },
+      { q: "Il Kick-off Meeting costituisce:", o: ["L'ultima riunione prima della chiusura formale del progetto", "La prima delle riunioni operative di progetto, svolta quando il Piano di Progetto è approvato, per avviare la fase di esecuzione", "La riunione in cui lo Sponsor approva formalmente il Project Charter", "Una riunione opzionale per i progetti di piccole dimensioni"], c: 1 }
+    ]
+  },
+
+  {
+    chip: "Cap. 23–27 — Esecuzione, Leadership, Monitoraggio ed EVM",
+    title: "Processi esecutivi, leadership, monitoraggio e Earned Value",
+    qs: [
+      { q: "Il Leader Servitore (Servant Leader) nel Project Management:", o: ["Impone le decisioni dall'alto senza consultare il team", "Vuole un alto livello di controllo e un canale di comunicazione unidirezionale", "Si concentra sulla crescita, l'apprendimento, lo sviluppo, l'autonomia e il benessere degli altri; la leadership è secondaria ed emerge dopo il servizio", "Delega tutto senza mai intervenire anche quando richiesto"], c: 2 },
+      { q: "La Leadership Laissez-faire è efficace principalmente quando:", o: ["Il progetto è in una fase critica che richiede decisioni rapide e centralizzate", "Il team è alle prime armi e ha bisogno di guida e supporto continui", "Il gruppo è formato da persone motivate e capaci che sanno auto-organizzarsi", "Il PM ha scarsa esperienza nel settore specifico del progetto"], c: 2 },
+      { q: "Il termine 'Controllo' nel Project Management corrisponde all'inglese 'Control' che significa:", o: ["Sorvegliare il comportamento del team per assicurare il rispetto delle regole", "Osservare e regolare/contenere l'andamento di parametri come costi e tempi nel corso del progetto", "Approvare formalmente ogni deliverable prima che il team possa procedere con il successivo", "Verificare che le risorse rispettino gli orari di lavoro contrattualmente previsti"], c: 1 },
+      { q: "La Data Date nel monitoraggio del progetto è:", o: ["La data di scadenza contrattuale concordata con il cliente", "La data in cui viene approvata formalmente la baseline di progetto", "Il momento in cui viene rilevato lo stato di avanzamento del progetto", "La data di inizio del prossimo periodo di consolidamento"], c: 2 },
+      { q: "Il Valore Pianificato (PV – Planned Value) nell'EVM è:", o: ["Il costo effettivamente sostenuto per il lavoro eseguito fino alla data corrente", "Il valore del lavoro completato espresso in termini di budget autorizzato", "Il budget autorizzato assegnato al lavoro schedulato a una certa data", "La stima del costo totale previsto per completare l'intero progetto"], c: 2 },
+      { q: "L'Earned Value (EV) è definito come:", o: ["Il costo effettivo sostenuto per le attività completate fino alla data corrente", "Il budget pianificato per il lavoro che avrebbe dovuto essere completato", "La misura del lavoro eseguito espressa in termini del budget autorizzato per tale lavoro", "La stima del costo rimanente per completare il progetto"], c: 2 },
+      { q: "La Schedule Variance (SV) si calcola come:", o: ["SV = PV – EV", "SV = AC – EV", "SV = EV – AC", "SV = EV – PV"], c: 3 }
+    ]
+  },
+
+  {
+    chip: "Cap. 28–29 — Reportistica e Chiusura",
+    title: "Report di progetto, strumenti di reporting e processi di chiusura",
+    qs: [
+      { q: "I report possono essere classificati in tre categorie. Quale NON è tra queste?", o: ["Report Assoluti: fotografia in un dato istante", "Report Relativi: confronto tra parametri in istanti diversi rispetto alla baseline", "Report Predittivi: previsione del futuro basata su modelli statistici", "Report di Trend: andamento nel tempo di indici di progetto"], c: 2 },
+      { q: "Il P-Chart (Report di Trend) mostra:", o: ["La distribuzione gerarchica dei costi tra le componenti della WBS", "Le milestone principali su una timeline per la reportistica direzionale", "L'andamento dei costi a finire (ETC) nel tempo, permettendo di identificare trend positivi o negativi", "Il confronto tra SPI e CPI per valutare lo stato complessivo del progetto"], c: 2 },
+      { q: "Il Treemap è uno strumento di visualizzazione che:", o: ["Mostra le relazioni logiche tra le attività in forma di reticolo", "Rappresenta dati gerarchici attraverso rettangoli annidati, con l'area di ogni rettangolo proporzionale al valore rappresentato", "Visualizza l'andamento dell'Earned Value nel tempo rispetto al piano", "Mostra il confronto tra le milestone pianificate e quelle effettive"], c: 1 }
+    ]
+  },
+
+  {
+    chip: "Cap. 30 — Agile e Scrum",
+    title: "Manifesto Agile, MVP, Scrum: ruoli, eventi e artefatti",
+    qs: [
+      { q: "Il Manifesto Agile è stato redatto nel:", o: ["1995 da un gruppo di esperti di project management tradizionale", "2001 da un gruppo di esperti di sviluppo software nelle montagne dello Utah", "2009 come alternativa al PMBOK Guide", "1986 contestualmente alla prima edizione del PMBOK"], c: 1 },
+      { q: "Quali sono i quattro valori fondamentali del Manifesto Agile?", o: ["Costo, Qualità, Tempo e Scope", "Individui e interazioni, Software funzionante, Collaborazione con il cliente, Rispondere al cambiamento", "Pianificazione, Esecuzione, Verifica e Azione", "Visione, Missione, Obiettivi e Strategia"], c: 1 },
+      { q: "Il Minimum Viable Product (MVP) è definito come:", o: ["Il prodotto finale completo consegnato al cliente alla fine del progetto", "Il più piccolo prodotto possibile che sia funzionante (l'utente lo acquista), utilizzabile (l'utente lo usa) e fattibile (può essere realizzato)", "Il prototipo iniziale usato esclusivamente per raccogliere i requisiti", "La versione minima del prodotto accettata formalmente dal cliente come deliverable finale"], c: 1 },
+      { q: "In Scrum, il Product Owner è responsabile di:", o: ["Facilitare gli eventi Scrum e rimuovere gli impedimenti del team", "Sviluppare direttamente le funzionalità del prodotto come membro tecnico del team", "Massimizzare il valore del prodotto e gestire il Product Backlog (contenuto, disponibilità e ordinamento)", "Assicurare che Scrum sia compreso e applicato correttamente nell'organizzazione"], c: 2 },
+      { q: "Lo Scrum Master è definito come:", o: ["Il responsabile tecnico del Team di Sviluppo che assegna i task ai membri", "Un leader a servizio (servant-leader) responsabile di assicurare che Scrum sia compreso e approvato", "Il rappresentante del cliente all'interno del team Scrum", "Il Project Manager tradizionale adattato al contesto Agile"], c: 1 },
+      { q: "Il Team di Sviluppo in Scrum NON deve contenere:", o: ["Persone con competenze tecniche specialistiche", "Sotto-team dedicati a domini specifici come testing, architettura o Business Analysis", "Professionisti capaci di produrre un incremento potenzialmente rilasciabile", "Persone capaci di auto-organizzarsi per gestire il proprio lavoro"], c: 1 }
+    ]
+  }
+];
+const allQ = [];
+sections.forEach(s => s.qs.forEach(q => allQ.push({...q})));
+const TOTAL = allQ.length;
+let answers = Array(TOTAL).fill(null);
+document.getElementById("s-total").textContent = TOTAL;
+document.getElementById("prog-count").textContent = "0 / " + TOTAL;
+function build() {
+  const body = document.getElementById("quiz-body");
+  body.innerHTML = "";
+  let gi = 0;
+  sections.forEach(sec => {
+    const sh = document.createElement("div"); sh.className = "sec-head";
+    sh.innerHTML = `<div class="sec-chip">${sec.chip}</div><div class="sec-title">${sec.title}</div>`;
+    body.appendChild(sh);
+    const wrap = document.createElement("div"); wrap.className = "cards";
+    sec.qs.forEach(() => {
+      const i = gi; const q = allQ[i];
+      const card = document.createElement("div"); card.className = "qcard";
+      card.innerHTML = `<div class="qnum">Domanda ${i+1} di ${TOTAL}</div><div class="qtext">${q.q}</div>${q.o.map((op,j)=>`<div class="opt" id="o-${i}-${j}" onclick="pick(${i},${j})"><input type="radio" name="q${i}"><div class="opt-l">${String.fromCharCode(65+j)}</div><label>${op}</label></div>`).join("")}`;
+      wrap.appendChild(card); gi++;
+    });
+    body.appendChild(wrap);
+  });
+}
+function pick(qi,oi) {
+  answers[qi]=oi;
+  for(let j=0;j<allQ[qi].o.length;j++) document.getElementById(`o-${qi}-${j}`).classList.remove("selected");
+  document.getElementById(`o-${qi}-${oi}`).classList.add("selected");
+  const done=answers.filter(a=>a!==null).length;
+  document.getElementById("prog-fill").style.width=(done/TOTAL*100)+"%";
+  document.getElementById("prog-count").textContent=`${done} / ${TOTAL}`;
+  document.getElementById("s-done").textContent=done;
+  document.getElementById("submit-btn").disabled=done<TOTAL;
+}
+function submitQuiz() {
+  let score=0; const wrong=[];
+  allQ.forEach((q,i)=>{
+    const c=q.c,ch=answers[i];
+    for(let j=0;j<q.o.length;j++){
+      const el=document.getElementById(`o-${i}-${j}`);
+      el.style.pointerEvents="none";
+      if(j===c) el.classList.add("correct");
+      else if(j===ch) el.classList.add("wrong");
+    }
+    if(ch===c) score++;
+    else wrong.push({n:i+1,q:q.q,y:q.o[ch],c:q.o[c]});
+  });
+  document.getElementById("submit-btn").style.display="none";
+  const pct=Math.round(score/TOTAL*100);
+  const circle=document.getElementById("res-circle");
+  circle.textContent=pct+"%";
+  circle.className="res-circle "+(pct>=70?"rg":pct>=50?"rm":"rb");
+  document.getElementById("res-title").textContent=pct>=80?"🎉 Ottimo risultato!":pct>=60?"👍 Quasi, puoi migliorare!":"📚 Ripassia ancora un po'!";
+  document.getElementById("res-sub").textContent=`Quiz 4 · ${score}/${TOTAL} risposte corrette`;
+  document.getElementById("rs-ok").textContent=score;
+  document.getElementById("rs-no").textContent=TOTAL-score;
+  document.getElementById("rs-pct").textContent=pct+"%";
+  document.getElementById("result").style.display="block";
+  document.getElementById("result").scrollIntoView({behavior:"smooth"});
+  buildErrors(wrong); fetchFeedback(score,pct,wrong);
+}
+function buildErrors(wrong) {
+  const box=document.getElementById("errors-box");
+  if(wrong.length===0){box.innerHTML='<div class="no-errors">✅ Perfetto! Nessun errore commesso.</div>';return;}
+  let html=`<div class="errors-title">❌ Risposte errate (${wrong.length})</div>`;
+  wrong.forEach(w=>{html+=`<div class="err-item"><div class="err-num">Domanda ${w.n}</div><div class="err-question">${w.q}</div><div class="err-row"><span class="err-badge wb">Tua risposta</span><span class="err-answer">${w.y}</span></div><div class="err-row"><span class="err-badge cb">Risposta corretta</span><span class="err-answer ca">${w.c}</span></div></div>`;});
+  box.innerHTML=html;
+}
+async function fetchFeedback(score,pct,wrong) {
+  const weakSections={};
+  wrong.forEach(w=>{let gi=0;for(const sec of sections){for(let qi=0;qi<sec.qs.length;qi++){if(gi===w.n-1){weakSections[sec.chip]=(weakSections[sec.chip]||0)+1;}gi++;}}} );
+  const weak=Object.entries(weakSections).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${k} (${v} errori)`).join(", ");
+  const prompt=`Sei un professore di Project Management. Uno studente ha completato il Quiz 4 del corso (${TOTAL} domande fedeli al testo su tutti i 30 capitoli) ottenendo ${score}/${TOTAL} (${pct}%). Aree più deboli: ${weak||"nessuna"}. Scrivi un feedback di 5 righe in italiano: incoraggiante, identifica cosa ripassare e dai un consiglio pratico. Sii diretto.`;
+  try {
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
+    const d=await r.json();
+    document.getElementById("fb-text").textContent=d.content?.find(b=>b.type==="text")?.text||"Feedback non disponibile.";
+  } catch {document.getElementById("fb-text").textContent="Feedback non disponibile al momento.";}
+}
+function resetQuiz() {
+  answers=Array(TOTAL).fill(null);
+  document.getElementById("result").style.display="none";
+  document.getElementById("submit-btn").style.display="block";
+  document.getElementById("submit-btn").disabled=true;
+  document.getElementById("prog-fill").style.width="0%";
+  document.getElementById("prog-count").textContent=`0 / ${TOTAL}`;
+  document.getElementById("s-done").textContent="0";
+  build(); window.scrollTo(0,0);
+}
+build();
+</script>
+</body>
+</html>
