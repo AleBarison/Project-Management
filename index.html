@@ -9,51 +9,37 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Inter', sans-serif; background: #0b0d14; color: #e8eaf0; min-height: 100vh; padding: 0 0 60px; }
 
-  .hero {
-    background: linear-gradient(135deg, #0d0f1a 0%, #0b0d14 60%, #0d0a1a 100%);
-    padding: 56px 24px 44px; text-align: center;
-    border-bottom: 1px solid #252a3a; position: relative; overflow: hidden;
-  }
-  .hero::before {
-    content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 65%);
-    pointer-events: none;
-  }
+  .hero { background: linear-gradient(135deg, #0d0f1a 0%, #0b0d14 60%, #0d0a1a 100%); padding: 56px 24px 44px; text-align: center; border-bottom: 1px solid #252a3a; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 65%); pointer-events: none; }
   .hero-tag { display: inline-block; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.35); color: #a5b4fc; font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 16px; border-radius: 99px; margin-bottom: 18px; }
   .hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: -1px; margin-bottom: 12px; }
   .hero h1 span { color: #818cf8; }
   .hero p { color: #6b7280; font-size: 0.95rem; max-width: 480px; margin: 0 auto 32px; line-height: 1.7; }
-
   .global-stats { display: flex; justify-content: center; max-width: 480px; margin: 0 auto; background: #13161f; border: 1px solid #252a3a; border-radius: 14px; overflow: hidden; }
   .gstat { flex: 1; padding: 18px 8px; text-align: center; border-right: 1px solid #252a3a; }
   .gstat:last-child { border-right: none; }
   .gstat-n { font-size: 1.6rem; font-weight: 800; color: #818cf8; }
   .gstat-l { font-size: 0.68rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 3px; }
 
-  .section-wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+  .section-wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
   .section-label { display: flex; align-items: center; gap: 12px; margin: 40px 0 16px; }
   .section-label span { font-size: 0.72rem; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
   .section-label::before, .section-label::after { content: ''; flex: 1; height: 1px; background: #252a3a; }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 14px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
 
-  .card {
-    background: #13161f; border: 1px solid #252a3a; border-radius: 16px;
-    padding: 24px; text-decoration: none; color: inherit;
-    display: block; transition: all 0.22s ease; position: relative; overflow: hidden;
-  }
+  .card { background: #13161f; border: 1px solid #252a3a; border-radius: 16px; padding: 22px; text-decoration: none; color: inherit; display: block; transition: all 0.22s ease; position: relative; overflow: hidden; }
   .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--ca), var(--cb)); opacity: 0; transition: opacity 0.22s; }
   .card:hover { border-color: #2d3448; background: #1a1f2e; transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
   .card:hover::before { opacity: 1; }
-
-  .card-icon { font-size: 2rem; margin-bottom: 14px; }
-  .card-tag { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; color: var(--ca); }
-  .card-title { font-size: 1rem; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; line-height: 1.3; }
-  .card-desc { font-size: 0.82rem; color: #6b7280; line-height: 1.55; margin-bottom: 14px; }
-  .card-footer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .pill { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.04); border: 1px solid #2d3448; padding: 3px 10px; border-radius: 99px; font-size: 0.7rem; color: #9ca3af; }
-  .badge-new { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #10b981; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+  .card-icon { font-size: 1.8rem; margin-bottom: 12px; }
+  .card-tag { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; color: var(--ca); }
+  .card-title { font-size: 0.97rem; font-weight: 700; color: #f1f5f9; margin-bottom: 5px; line-height: 1.3; }
+  .card-desc { font-size: 0.79rem; color: #6b7280; line-height: 1.5; margin-bottom: 12px; }
+  .card-footer { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .pill { display: inline-flex; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid #2d3448; padding: 3px 9px; border-radius: 99px; font-size: 0.68rem; color: #9ca3af; }
+  .badge-new { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #10b981; font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
 </style>
 </head>
 <body>
@@ -63,89 +49,117 @@
   <h1>📋 PM <span>Academy</span></h1>
   <p>Tutti i quiz di Project Management per prepararti al meglio all'esame.</p>
   <div class="global-stats">
-    <div class="gstat"><div class="gstat-n">8</div><div class="gstat-l">Quiz</div></div>
+    <div class="gstat"><div class="gstat-n">17</div><div class="gstat-l">Quiz</div></div>
     <div class="gstat"><div class="gstat-n">30</div><div class="gstat-l">Capitoli</div></div>
     <div class="gstat"><div class="gstat-n">70%</div><div class="gstat-l">Per passare</div></div>
-    <div class="gstat"><div class="gstat-n">500+</div><div class="gstat-l">Domande</div></div>
+    <div class="gstat"><div class="gstat-n">700+</div><div class="gstat-l">Domande</div></div>
   </div>
 </div>
 
 <div class="section-wrap">
 
-  <div class="section-label"><span>Quiz Completi – Tutto il corso</span></div>
-  <div class="grid">
-
+  <div class="section-label"><span>Quiz Completi – Tutto il corso (Cap. 1–30)</span></div>
+  <div class="grid-2">
     <a href="Quiz_1_PM_Completo.html" class="card" style="--ca:#6366f1;--cb:#8b5cf6">
-      <div class="card-icon">🏆</div>
-      <div class="card-tag">Quiz 1</div>
+      <div class="card-icon">🏆</div><div class="card-tag">Quiz 1</div>
       <div class="card-title">Quiz 1 – Corso Completo</div>
       <div class="card-desc">Prima batteria su tutti gli argomenti: definizioni, ruoli, WBS, rischi, EVM e Scrum.</div>
-      <div class="card-footer"><span class="pill">📄 78 domande</span><span class="pill">📖 Cap. 1–30</span></div>
+      <div class="card-footer"><span class="pill">📄 78 dom.</span><span class="pill">📖 Cap. 1–30</span></div>
     </a>
-
     <a href="Quiz_2_Originale_77.html" class="card" style="--ca:#f59e0b;--cb:#ef4444">
-      <div class="card-icon">🥇</div>
-      <div class="card-tag">Quiz 2</div>
+      <div class="card-icon">🥇</div><div class="card-tag">Quiz 2</div>
       <div class="card-title">Quiz 2 – Corso Completo</div>
       <div class="card-desc">Seconda batteria con domande nuove su tutti gli argomenti del corso.</div>
-      <div class="card-footer"><span class="pill">📄 77 domande</span><span class="pill">📖 Cap. 1–30</span></div>
+      <div class="card-footer"><span class="pill">📄 77 dom.</span><span class="pill">📖 Cap. 1–30</span></div>
     </a>
-
     <a href="Quiz_3_Completo.html" class="card" style="--ca:#f43f5e;--cb:#8b5cf6">
-      <div class="card-icon">🎯</div>
-      <div class="card-tag">Quiz 3</div>
+      <div class="card-icon">🎯</div><div class="card-tag">Quiz 3</div>
       <div class="card-title">Quiz 3 – Situazionale</div>
-      <div class="card-desc">60 domande situazionali: nessuna definizione a memoria, solo ragionamento applicato.</div>
-      <div class="card-footer"><span class="pill">📄 60 domande</span><span class="pill">📖 Cap. 1–30</span></div>
+      <div class="card-desc">60 domande situazionali: ragionamento applicato, nessuna definizione a memoria.</div>
+      <div class="card-footer"><span class="pill">📄 60 dom.</span><span class="pill">📖 Cap. 1–30</span></div>
     </a>
-
     <a href="Quiz_4_Completo.html" class="card" style="--ca:#0ea5e9;--cb:#6366f1">
-      <div class="card-icon">📘</div>
-      <div class="card-tag">Quiz 4</div>
+      <div class="card-icon">📘</div><div class="card-tag">Quiz 4</div>
       <div class="card-title">Quiz 4 – Fedele al testo</div>
-      <div class="card-desc">Definizioni esatte, formule precise e termini tecnici così come compaiono nel PDF del corso.</div>
-      <div class="card-footer"><span class="pill">📄 63 domande</span><span class="pill">📖 Cap. 1–30</span><span class="badge-new">Nuovo</span></div>
+      <div class="card-desc">Definizioni esatte, formule e termini tecnici così come compaiono nel PDF.</div>
+      <div class="card-footer"><span class="pill">📄 63 dom.</span><span class="pill">📖 Cap. 1–30</span></div>
     </a>
-
     <a href="Quiz_5_Completo.html" class="card" style="--ca:#a855f7;--cb:#ec4899">
-      <div class="card-icon">📗</div>
-      <div class="card-tag">Quiz 5</div>
+      <div class="card-icon">📗</div><div class="card-tag">Quiz 5</div>
       <div class="card-title">Quiz 5 – Fedele al testo</div>
-      <div class="card-desc">Seconda batteria fedele al PDF: mix di domande nuove su tutti i 30 capitoli.</div>
-      <div class="card-footer"><span class="pill">📄 59 domande</span><span class="pill">📖 Cap. 1–30</span><span class="badge-new">Nuovo</span></div>
+      <div class="card-desc">Seconda batteria fedele al PDF su tutti i 30 capitoli.</div>
+      <div class="card-footer"><span class="pill">📄 59 dom.</span><span class="pill">📖 Cap. 1–30</span></div>
     </a>
-
+    <a href="Quiz_6_Completo.html" class="card" style="--ca:#10b981;--cb:#06b6d4">
+      <div class="card-icon">📙</div><div class="card-tag">Quiz 6</div>
+      <div class="card-title">Quiz 6 – Fedele al testo</div>
+      <div class="card-desc">Terza batteria fedele al PDF su tutti i 30 capitoli, domande mai viste prima.</div>
+      <div class="card-footer"><span class="pill">📄 64 dom.</span><span class="pill">📖 Cap. 1–30</span><span class="badge-new">Nuovo</span></div>
+    </a>
   </div>
 
-  <div class="section-label"><span>Quiz per Sezione</span></div>
+  <div class="section-label"><span>Quiz per Sezione – Blocchi di 10 capitoli</span></div>
   <div class="grid">
-
     <a href="quiz_cap1-11.html" class="card" style="--ca:#06b6d4;--cb:#0ea5e9">
-      <div class="card-icon">📖</div>
-      <div class="card-tag">Cap. 1–11</div>
+      <div class="card-icon">📖</div><div class="card-tag">Cap. 1–11</div>
       <div class="card-title">Fondamenti e Schedulazione</div>
-      <div class="card-desc">Progetto, Processo, Portfolio, PMO, PM, Sponsor, vincoli, WBS, CPM e stime.</div>
-      <div class="card-footer"><span class="pill">📄 42 domande</span><span class="pill">📖 Cap. 1–11</span></div>
+      <div class="card-desc">Progetto, Portfolio, PMO, PM, Sponsor, vincoli, WBS, CPM e stime.</div>
+      <div class="card-footer"><span class="pill">📄 42 dom.</span></div>
     </a>
-
     <a href="quiz_cap12-20.html" class="card" style="--ca:#f59e0b;--cb:#c05621">
-      <div class="card-icon">⚠️</div>
-      <div class="card-tag">Cap. 12–20</div>
+      <div class="card-icon">⚠️</div><div class="card-tag">Cap. 12–20</div>
       <div class="card-title">Rischi, Qualità e Costi</div>
-      <div class="card-desc">Risorse, risk management, qualità, procurement, costi, comunicazione, sicurezza e changeover.</div>
-      <div class="card-footer"><span class="pill">📄 40 domande</span><span class="pill">📖 Cap. 12–20</span></div>
+      <div class="card-desc">Risorse, rischi, qualità, procurement, costi, comunicazione, sicurezza e changeover.</div>
+      <div class="card-footer"><span class="pill">📄 40 dom.</span></div>
     </a>
-
     <a href="quiz_cap21-30.html" class="card" style="--ca:#8b5cf6;--cb:#ec4899">
-      <div class="card-icon">📊</div>
-      <div class="card-tag">Cap. 21–30</div>
+      <div class="card-icon">📊</div><div class="card-tag">Cap. 21–30</div>
       <div class="card-title">EVM, Chiusura e Scrum</div>
-      <div class="card-desc">Baseline, kick-off, leadership, monitoraggio, EVM, reportistica, chiusura e Agile/Scrum.</div>
-      <div class="card-footer"><span class="pill">📄 40 domande</span><span class="pill">📖 Cap. 21–30</span></div>
+      <div class="card-desc">Baseline, kick-off, leadership, EVM, reportistica, chiusura e Agile/Scrum.</div>
+      <div class="card-footer"><span class="pill">📄 40 dom.</span></div>
     </a>
-
   </div>
-</div>
 
+  <div class="section-label"><span>Quiz per Sezione – Blocchi di 5 capitoli</span></div>
+  <div class="grid">
+    <a href="quiz_cap1-5.html" class="card" style="--ca:#6366f1;--cb:#8b5cf6">
+      <div class="card-icon">1️⃣</div><div class="card-tag">Cap. 1–5</div>
+      <div class="card-title">Fondamenti e Vincoli</div>
+      <div class="card-desc">Progetto, Processo, Programma, Portfolio, tipologie di progetto, metodologia PM e Triple Constraint.</div>
+      <div class="card-footer"><span class="pill">📄 19 dom.</span><span class="badge-new">Nuovo</span></div>
+    </a>
+    <a href="quiz_cap6-10.html" class="card" style="--ca:#f59e0b;--cb:#ef4444">
+      <div class="card-icon">2️⃣</div><div class="card-tag">Cap. 6–10</div>
+      <div class="card-title">Avvio e Scope Management</div>
+      <div class="card-desc">Cause di fallimento, PMI/IPMA/ISO, stakeholder, Project Charter, pianificazione e WBS.</div>
+      <div class="card-footer"><span class="pill">📄 14 dom.</span><span class="badge-new">Nuovo</span></div>
+    </a>
+    <a href="quiz_cap11-15.html" class="card" style="--ca:#10b981;--cb:#06b6d4">
+      <div class="card-icon">3️⃣</div><div class="card-tag">Cap. 11–15</div>
+      <div class="card-title">Schedulazione e Rischi</div>
+      <div class="card-desc">CPM, TF/FF, risorse, FTE, Crashing, Fast Tracking, risk management, qualità e Make or Buy.</div>
+      <div class="card-footer"><span class="pill">📄 14 dom.</span><span class="badge-new">Nuovo</span></div>
+    </a>
+    <a href="quiz_cap16-20.html" class="card" style="--ca:#f43f5e;--cb:#fb7185">
+      <div class="card-icon">4️⃣</div><div class="card-tag">Cap. 16–20</div>
+      <div class="card-title">Costi, Comunicazione e Sicurezza</div>
+      <div class="card-desc">Cost Baseline, Management Reserve, comunicazione, Piano di Progetto, CIA, RPO/RTO e Changeover.</div>
+      <div class="card-footer"><span class="pill">📄 14 dom.</span><span class="badge-new">Nuovo</span></div>
+    </a>
+    <a href="quiz_cap21-25.html" class="card" style="--ca:#8b5cf6;--cb:#ec4899">
+      <div class="card-icon">5️⃣</div><div class="card-tag">Cap. 21–25</div>
+      <div class="card-title">Baseline, Kick-off e Leadership</div>
+      <div class="card-desc">Baseline, PMB, Kick-off Meeting, processi di esecuzione, leadership e Team Building.</div>
+      <div class="card-footer"><span class="pill">📄 14 dom.</span><span class="badge-new">Nuovo</span></div>
+    </a>
+    <a href="quiz_cap26-30.html" class="card" style="--ca:#06b6d4;--cb:#0ea5e9">
+      <div class="card-icon">6️⃣</div><div class="card-tag">Cap. 26–30</div>
+      <div class="card-title">EVM, Chiusura e Scrum</div>
+      <div class="card-desc">Monitoraggio, Curve ad S, EVM, reportistica, chiusura del progetto, Agile e Scrum.</div>
+      <div class="card-footer"><span class="pill">📄 18 dom.</span><span class="badge-new">Nuovo</span></div>
+    </a>
+  </div>
+
+</div>
 </body>
 </html>

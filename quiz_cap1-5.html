@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Cap. 1–5</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0b0d14; --surface: #13161f; --border: #252a3a; --border2: #2d3448; --text: #e8eaf0; --muted: #6b7280; --dim: #9ca3af; --ca: #6366f1; --glow: rgba(99,102,241,0.1); }
+  body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .hero { background: linear-gradient(135deg, #0a0b1a 0%, #0b0d14 60%, #0d0a1a 100%); padding: 52px 24px 40px; text-align: center; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 65%); pointer-events: none; }
+  .hero-tag { display: inline-block; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.35); color: #a5b4fc; font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 16px; border-radius: 99px; margin-bottom: 18px; }
+  .hero h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 900; color: #fff; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .hero h1 span { color: #818cf8; }
+  .hero p { color: var(--muted); font-size: 0.92rem; max-width: 480px; margin: 0 auto 28px; line-height: 1.6; }
+  .stats-row { display: flex; justify-content: center; max-width: 360px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .stat { flex: 1; padding: 14px 8px; text-align: center; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-n { font-size: 1.4rem; font-weight: 800; color: #818cf8; }
+  .stat-l { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+  .prog-wrap { background: var(--surface); padding: 12px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .prog-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .prog-label { font-size: 0.75rem; color: var(--muted); }
+  .prog-count { font-size: 0.75rem; font-weight: 700; color: #818cf8; }
+  .prog-bg { background: var(--border); border-radius: 99px; height: 4px; }
+  .prog-fill { background: linear-gradient(90deg, #6366f1, #8b5cf6); height: 4px; border-radius: 99px; transition: width 0.35s; width: 0%; }
+  .sec-head { max-width: 700px; margin: 0 auto; padding: 24px 24px 6px; }
+  .sec-chip { display: inline-flex; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25); color: #a5b4fc; font-size: 0.68rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
+  .sec-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-top: 5px; }
+  .cards { max-width: 700px; margin: 0 auto; padding: 6px 24px; }
+  .qcard { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: 20px; margin-bottom: 10px; }
+  .qnum { font-size: 0.68rem; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
+  .qtext { font-size: 0.95rem; font-weight: 600; color: #f1f5f9; line-height: 1.5; margin-bottom: 12px; }
+  .opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 13px; border-radius: 8px; border: 1.5px solid var(--border2); margin-bottom: 6px; cursor: pointer; transition: all 0.18s; }
+  .opt:hover { border-color: #6366f1; background: var(--glow); }
+  .opt.selected { border-color: #6366f1; background: var(--glow); }
+  .opt.correct { border-color: #10b981; background: rgba(16,185,129,0.08); }
+  .opt.wrong { border-color: #ef4444; background: rgba(239,68,68,0.08); }
+  .opt input[type=radio] { display: none; }
+  .opt-l { width: 20px; height: 20px; border-radius: 5px; background: var(--border2); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: var(--muted); flex-shrink: 0; transition: all 0.18s; }
+  .opt.selected .opt-l { background: #6366f1; color: #fff; }
+  .opt.correct .opt-l { background: #10b981; color: #fff; }
+  .opt.wrong .opt-l { background: #ef4444; color: #fff; }
+  .opt label { cursor: pointer; font-size: 0.88rem; color: #cbd5e1; line-height: 1.4; }
+  .footer { max-width: 700px; margin: 0 auto; padding: 14px 24px 48px; }
+  .submit-btn { display: block; width: 100%; padding: 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; border-radius: 11px; font-size: 0.97rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+  .submit-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  .submit-btn:disabled { background: var(--border2); color: var(--muted); cursor: not-allowed; transform: none; }
+  #result { display: none; max-width: 600px; margin: 0 auto; padding: 28px 24px 56px; }
+  .res-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px 24px; text-align: center; }
+  .res-circle { width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 1.8rem; font-weight: 800; }
+  .rg { background: rgba(16,185,129,0.1); color: #10b981; border: 3px solid #10b981; }
+  .rm { background: rgba(245,158,11,0.1); color: #f59e0b; border: 3px solid #f59e0b; }
+  .rb { background: rgba(239,68,68,0.1); color: #ef4444; border: 3px solid #ef4444; }
+  .res-title { font-size: 1.25rem; font-weight: 800; color: #f1f5f9; margin-bottom: 5px; }
+  .res-sub { color: var(--muted); font-size: 0.87rem; margin-bottom: 20px; }
+  .res-stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+  .rs { text-align: center; }
+  .rs-n { font-size: 1.4rem; font-weight: 800; }
+  .rs-n.g { color: #10b981; } .rs-n.r { color: #ef4444; } .rs-n.b { color: #818cf8; }
+  .rs-l { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .fb-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: left; margin-bottom: 18px; }
+  .fb-title { font-size: 0.7rem; font-weight: 700; color: #818cf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .fb-text { font-size: 0.86rem; color: var(--dim); line-height: 1.65; }
+  .loading { font-style: italic; color: var(--muted); }
+  .errors-box { margin-top: 16px; text-align: left; }
+  .errors-title { font-size: 0.75rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .err-item { background: var(--bg); border: 1px solid rgba(239,68,68,0.25); border-radius: 9px; padding: 12px 14px; margin-bottom: 8px; }
+  .err-num { font-size: 0.65rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 5px; }
+  .err-question { font-size: 0.85rem; font-weight: 600; color: #e2e8f0; margin-bottom: 8px; line-height: 1.4; }
+  .err-row { display: flex; align-items: flex-start; gap: 7px; margin-bottom: 4px; }
+  .err-badge { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .err-badge.wb { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+  .err-badge.cb { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .err-answer { font-size: 0.82rem; color: var(--dim); line-height: 1.35; }
+  .err-answer.ca { color: #6ee7b7; font-weight: 500; }
+  .no-errors { text-align: center; padding: 16px; color: #10b981; font-size: 0.92rem; font-weight: 600; }
+  .res-btns { display: flex; gap: 10px; }
+  .btn-retry { flex: 1; padding: 12px; background: none; border: 1.5px solid var(--border2); color: var(--dim); border-radius: 9px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+  .btn-retry:hover { border-color: #6366f1; color: #a5b4fc; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-tag">Capitoli 1–5</div>
+  <h1>Quiz – <span>Cap. 1–5</span></h1>
+  <p>Progetto, Processo, Programma, Portfolio, tipologie di progetto, metodologia PM e vincoli di progetto.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="s-total">–</div><div class="stat-l">Domande</div></div>
+    <div class="stat"><div class="stat-n">5</div><div class="stat-l">Capitoli</div></div>
+    <div class="stat"><div class="stat-n">70%</div><div class="stat-l">Per passare</div></div>
+  </div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-top"><span class="prog-label">Avanzamento</span><span class="prog-count" id="prog-count">0 / –</span></div>
+  <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+</div>
+<div id="quiz-body"></div>
+<div class="footer"><button class="submit-btn" id="submit-btn" onclick="submitQuiz()" disabled>Consegna</button></div>
+<div id="result">
+  <div class="res-card">
+    <div class="res-circle" id="res-circle"></div>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-sub" id="res-sub"></div>
+    <div class="res-stats">
+      <div class="rs"><div class="rs-n g" id="rs-ok">-</div><div class="rs-l">Corrette</div></div>
+      <div class="rs"><div class="rs-n r" id="rs-no">-</div><div class="rs-l">Errate</div></div>
+      <div class="rs"><div class="rs-n b" id="rs-pct">-</div><div class="rs-l">Punteggio</div></div>
+    </div>
+    <div class="fb-box"><div class="fb-title">💬 Feedback</div><div class="fb-text" id="fb-text"><span class="loading">Generazione…</span></div></div>
+    <div class="errors-box" id="errors-box"></div>
+    <div class="res-btns"><button class="btn-retry" onclick="resetQuiz()">🔄 Riprova</button></div>
+  </div>
+</div>
+<script>
+const sections = [
+  {
+    chip: "Cap. 1 — Il Progetto e il Processo",
+    title: "Definizioni, caratteristiche e differenze",
+    qs: [
+      { q: "Un Progetto è definito dal PMBOK come 'un'iniziativa temporanea'. Cosa significa 'temporanea' in questo contesto?", o: ["Il progetto dura al massimo 12 mesi", "Il progetto ha un inizio e una fine definiti e non è un'attività continuativa", "Il progetto può essere interrotto in qualsiasi momento senza conseguenze formali", "Il progetto è meno importante di un processo continuativo"], c: 1 },
+      { q: "Quale delle seguenti è una caratteristica del Processo ma NON del Progetto?", o: ["È interfunzionale: coinvolge diverse funzioni aziendali", "Produce output con caratteristiche di unicità", "È ripetitivo e produce output standardizzati", "Ha una data di inizio e una data di fine definiti"], c: 2 },
+      { q: "La 'caratterizzazione dei progetti' permette di:", o: ["Eliminare le differenze tra progetti simili rendendoli identici", "Dare origine a diversi processi di gestione e modelli di riferimento; progetti simili permettono l'uso di template", "Assegnare automaticamente le risorse senza intervento del PM", "Stabilire la durata massima di ogni tipo di progetto"], c: 1 },
+      { q: "Quale elemento NON fa parte della 'caratterizzazione' di un progetto secondo il materiale del corso?", o: ["Budget economico", "Project Manager", "Numero di concorrenti sul mercato", "Milestone"], c: 2 },
+      { q: "Progetto e Processo sono entrambi 'normalmente interfunzionali'. Cosa significa?", o: ["Entrambi richiedono la presenza di un Project Manager dedicato", "Entrambi coinvolgono diverse funzioni e competenze dell'organizzazione", "Entrambi producono lo stesso tipo di output misurabile", "Entrambi hanno una durata limitata con inizio e fine definiti"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 1 — Programma e Portfolio",
+    title: "Struttura gerarchica delle iniziative aziendali",
+    qs: [
+      { q: "Un Programma 'permette un livello di controllo superiore rispetto alla gestione separata' perché:", o: ["Assegna un PM unico a tutti i progetti riducendo i costi di coordinamento", "I progetti correlati sono gestiti in modo coordinato con risorse condivise e un obiettivo comune", "Elimina la necessità di un Project Charter per ogni singolo progetto incluso", "Riduce il numero di stakeholder da coinvolgere nelle decisioni strategiche"], c: 1 },
+      { q: "Nella struttura gerarchica del materiale del corso, quale relazione è corretta?", o: ["Il Portfolio contiene Programmi e Progetti; un Programma contiene Progetti correlati", "Il Programma contiene Portfolio; il Portfolio contiene Progetti", "Il Progetto contiene Programmi; il Programma contiene Portfolio", "Portfolio, Programma e Progetto sono allo stesso livello gerarchico"], c: 0 },
+      { q: "Il Portfolio mira a 'bilanciare il portafoglio' in termini di:", o: ["Solo rischio/rendimento a breve termine", "Rischio/rendimento, breve/lungo termine, innovazione/consolidamento e diverse linee di business", "Solo budget totale e numero di risorse disponibili", "Solo allineamento strategico con gli obiettivi della direzione"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 2 — Tipologie di Progetti",
+    title: "Classificazione dei progetti per cliente e obiettivo",
+    qs: [
+      { q: "In un 'Progetto di Sviluppo o Miglioramento', chi è il cliente?", o: ["Un cliente esterno che commissiona il progetto tramite contratto", "Il Marketing, che definisce le specifiche in base ai trend di mercato", "Un cliente interno all'organizzazione", "Un ente normativo che impone requisiti di miglioramento"], c: 2 },
+      { q: "Quale tipologia di progetto deriva da procedure di gara d'appalto con specifiche tecniche definite nel capitolato?", o: ["Progetto Commissionato dal Cliente (Commessa)", "Progetto Guidato da Capitolato (Gara)", "Progetto di Sviluppo in Base alle Esigenze del Cliente", "Progetto di Sviluppo Prodotto/Servizi per il Mercato"], c: 1 },
+      { q: "In un 'Progetto di Sviluppo Prodotto/Servizi per il Mercato', non c'è un cliente specifico predefinito perché:", o: ["Il prodotto è destinato esclusivamente all'uso interno dell'azienda", "Il 'cliente' è il Marketing e il prodotto è destinato a un mercato target guidato da analisi e trend", "Il progetto è finanziato direttamente dagli azionisti senza un committente identificato", "Il cliente verrà identificato solo al termine dello sviluppo del prodotto"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 3 — Metodologia PM",
+    title: "Definizione, componenti e complessità del PM",
+    qs: [
+      { q: "Quale delle seguenti è un esempio di 'Strumento' nel Project Management (non 'Tecnica')?", o: ["Il metodo PERT per la stima della durata", "Il Critical Path Method (CPM)", "Un software di project management", "La stima per analogia"], c: 2 },
+      { q: "La 'Complessità Organizzativa' come fattore di complessità nella gestione progetti si riferisce a:", o: ["Le difficoltà tecnologiche e l'innovatività delle soluzioni adottate", "Il numero e la diversità delle funzioni coinvolte nel progetto", "Il numero di progetti contemporanei attivi nell'organizzazione", "La grandezza fisica e geografica dell'organizzazione"], c: 1 },
+      { q: "Perché è necessario sviluppare processi adeguati per gestire numerosi piccoli progetti attivi contemporaneamente?", o: ["Perché i piccoli progetti non richiedono un PM dedicato", "Per la complessità derivante dalla condivisione delle risorse e dal coordinamento necessario tra progetti", "Perché i piccoli progetti hanno budget troppo limitati per essere gestiti individualmente", "Per ridurre il numero totale di progetti attivi nell'organizzazione"], c: 1 },
+    ]
+  },
+  {
+    chip: "Cap. 4–5 — Ruoli e Vincoli",
+    title: "PMO, PM, Sponsor e Triple Constraint",
+    qs: [
+      { q: "Il PMO pubblica 'best practices' e gestisce la 'knowledge base aziendale'. Quale funzione svolge?", o: ["Garanzia di qualità: omogeneità delle informazioni nei progetti", "Raccolta e diffusione: pubblicazione di best practice e gestione della knowledge base con lesson learned", "Standardizzazione: processi di gestione progetti e documentazione", "Facilitazione: condivisione delle risorse tra progetti"], c: 1 },
+      { q: "La 'Competenza Relazionale' del Project Manager moderno include:", o: ["La conoscenza approfondita di tutti i linguaggi di programmazione usati nel progetto", "Comunicazione efficace, mediazione, negoziazione, gestione dei conflitti e costruzione delle relazioni", "La capacità di redigere autonomamente tutti i documenti tecnici del progetto", "La conoscenza dettagliata del settore industriale del cliente committente"], c: 1 },
+      { q: "Secondo il materiale del corso, il ruolo del PM è passato da:", o: ["Manager orientato al cliente a esperto tecnico specializzato", "Esperto tecnico a manager orientato al cliente e al business", "Coordinatore operativo a responsabile strategico dell'organizzazione", "Gestore delle risorse umane a esperto di pianificazione finanziaria"], c: 1 },
+      { q: "Un progetto ha scadenza fissa e budget fisso. Il cliente chiede nuove funzionalità. Quale vincolo del Triplo Vincolo è sotto pressione?", o: ["Il Tempo: dovrà per forza aumentare", "Il Costo: il budget dovrà essere rivisto al rialzo", "L'Ambito (Scope): potrebbe essere necessario ridurre altre funzionalità per mantenere tempo e costo fissi", "La Qualità: dovrà essere ridotta per rispettare i vincoli"], c: 2 },
+      { q: "Quale dei seguenti è un 'altro vincolo' oltre al Triplo Vincolo citato nel materiale del corso?", o: ["Il numero di stakeholder coinvolti nel progetto", "La disponibilità di personale qualificato (Risorse)", "Il livello di innovazione tecnologica richiesto", "Il numero di deliverable da produrre"], c: 1 },
+    ]
+  }
+];
+const allQ=[]; sections.forEach(s=>s.qs.forEach(q=>allQ.push({...q}))); const TOTAL=allQ.length; let answers=Array(TOTAL).fill(null);
+document.getElementById("s-total").textContent=TOTAL; document.getElementById("prog-count").textContent="0 / "+TOTAL;
+function build(){const body=document.getElementById("quiz-body");body.innerHTML="";let gi=0;sections.forEach(sec=>{const sh=document.createElement("div");sh.className="sec-head";sh.innerHTML=`<div class="sec-chip">${sec.chip}</div><div class="sec-title">${sec.title}</div>`;body.appendChild(sh);const wrap=document.createElement("div");wrap.className="cards";sec.qs.forEach(()=>{const i=gi;const q=allQ[i];const card=document.createElement("div");card.className="qcard";card.innerHTML=`<div class="qnum">Domanda ${i+1} di ${TOTAL}</div><div class="qtext">${q.q}</div>${q.o.map((op,j)=>`<div class="opt" id="o-${i}-${j}" onclick="pick(${i},${j})"><input type="radio" name="q${i}"><div class="opt-l">${String.fromCharCode(65+j)}</div><label>${op}</label></div>`).join("")}`;wrap.appendChild(card);gi++;});body.appendChild(wrap);});}
+function pick(qi,oi){answers[qi]=oi;for(let j=0;j<allQ[qi].o.length;j++)document.getElementById(`o-${qi}-${j}`).classList.remove("selected");document.getElementById(`o-${qi}-${oi}`).classList.add("selected");const done=answers.filter(a=>a!==null).length;document.getElementById("prog-fill").style.width=(done/TOTAL*100)+"%";document.getElementById("prog-count").textContent=`${done} / ${TOTAL}`;document.getElementById("submit-btn").disabled=done<TOTAL;}
+function submitQuiz(){let score=0;const wrong=[];allQ.forEach((q,i)=>{const c=q.c,ch=answers[i];for(let j=0;j<q.o.length;j++){const el=document.getElementById(`o-${i}-${j}`);el.style.pointerEvents="none";if(j===c)el.classList.add("correct");else if(j===ch)el.classList.add("wrong");}if(ch===c)score++;else wrong.push({n:i+1,q:q.q,y:q.o[ch],c:q.o[c]});});document.getElementById("submit-btn").style.display="none";const pct=Math.round(score/TOTAL*100);const circle=document.getElementById("res-circle");circle.textContent=pct+"%";circle.className="res-circle "+(pct>=70?"rg":pct>=50?"rm":"rb");document.getElementById("res-title").textContent=pct>=80?"🎉 Ottimo!":pct>=60?"👍 Quasi!":"📚 Ripassia!";document.getElementById("res-sub").textContent=`Cap. 1–5 · ${score}/${TOTAL} corrette`;document.getElementById("rs-ok").textContent=score;document.getElementById("rs-no").textContent=TOTAL-score;document.getElementById("rs-pct").textContent=pct+"%";document.getElementById("result").style.display="block";document.getElementById("result").scrollIntoView({behavior:"smooth"});buildErrors(wrong);fetchFeedback(score,pct,wrong);}
+function buildErrors(wrong){const box=document.getElementById("errors-box");if(wrong.length===0){box.innerHTML='<div class="no-errors">✅ Perfetto! Nessun errore.</div>';return;}let html=`<div class="errors-title">❌ Risposte errate (${wrong.length})</div>`;wrong.forEach(w=>{html+=`<div class="err-item"><div class="err-num">D${w.n}</div><div class="err-question">${w.q}</div><div class="err-row"><span class="err-badge wb">Tua</span><span class="err-answer">${w.y}</span></div><div class="err-row"><span class="err-badge cb">Corretta</span><span class="err-answer ca">${w.c}</span></div></div>`;});box.innerHTML=html;}
+async function fetchFeedback(score,pct,wrong){const ws=wrong.length===0?"Nessun errore!":wrong.slice(0,6).map(w=>`- D${w.n}: "${w.q.substring(0,50)}…" → "${w.y}" (corretta: "${w.c}")`).join("\n");const prompt=`Professore di PM. Studente ha fatto quiz sui capitoli 1-5 (Progetto, Processo, Programma, Portfolio, tipologie, metodologia, PMO, PM, Sponsor, Triple Constraint). Risultato: ${score}/${TOTAL} (${pct}%). Errori: ${ws}. Feedback 4 righe in italiano: incoraggiante, cosa ripassare, consiglio pratico.`;try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:800,messages:[{role:"user",content:prompt}]})});const d=await r.json();document.getElementById("fb-text").textContent=d.content?.find(b=>b.type==="text")?.text||"Feedback non disponibile.";}catch{document.getElementById("fb-text").textContent="Feedback non disponibile al momento.";}}
+function resetQuiz(){answers=Array(TOTAL).fill(null);document.getElementById("result").style.display="none";document.getElementById("submit-btn").style.display="block";document.getElementById("submit-btn").disabled=true;document.getElementById("prog-fill").style.width="0%";document.getElementById("prog-count").textContent=`0 / ${TOTAL}`;build();window.scrollTo(0,0);}
+build();
+</script>
+</body>
+</html>

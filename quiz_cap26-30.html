@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Capitoli 26–30</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0b0d14; --surface: #13161f; --border: #252a3a; --border2: #2d3448; --text: #e8eaf0; --muted: #6b7280; --dim: #9ca3af; --ca: #06b6d4; --glow: rgba(6,182,212,0.1); }
+  body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .hero { background: linear-gradient(135deg, #0a0b1a 0%, #0b0d14 60%, #0d0a1a 100%); padding: 52px 24px 40px; text-align: center; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 65%); pointer-events: none; }
+  .hero-tag { display: inline-block; background: rgba(6,182,212,0.1); border: 1px solid #06b6d455; color: #67e8f9; font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 16px; border-radius: 99px; margin-bottom: 18px; }
+  .hero h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 900; color: #fff; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .hero h1 span { color: #67e8f9; }
+  .hero p { color: var(--muted); font-size: 0.92rem; max-width: 480px; margin: 0 auto 28px; line-height: 1.6; }
+  .stats-row { display: flex; justify-content: center; max-width: 360px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .stat { flex: 1; padding: 14px 8px; text-align: center; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-n { font-size: 1.4rem; font-weight: 800; color: #67e8f9; }
+  .stat-l { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+  .prog-wrap { background: var(--surface); padding: 12px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .prog-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .prog-label { font-size: 0.75rem; color: var(--muted); }
+  .prog-count { font-size: 0.75rem; font-weight: 700; color: #67e8f9; }
+  .prog-bg { background: var(--border); border-radius: 99px; height: 4px; }
+  .prog-fill { background: linear-gradient(90deg, #06b6d4, #0ea5e9); height: 4px; border-radius: 99px; transition: width 0.35s; width: 0%; }
+  .sec-head { max-width: 700px; margin: 0 auto; padding: 24px 24px 6px; }
+  .sec-chip { display: inline-flex; background: rgba(6,182,212,0.1); border: 1px solid #06b6d444; color: #67e8f9; font-size: 0.68rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
+  .sec-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-top: 5px; }
+  .cards { max-width: 700px; margin: 0 auto; padding: 6px 24px; }
+  .qcard { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: 20px; margin-bottom: 10px; }
+  .qnum { font-size: 0.68rem; font-weight: 700; color: #06b6d4; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
+  .qtext { font-size: 0.95rem; font-weight: 600; color: #f1f5f9; line-height: 1.5; margin-bottom: 12px; }
+  .opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 13px; border-radius: 8px; border: 1.5px solid var(--border2); margin-bottom: 6px; cursor: pointer; transition: all 0.18s; }
+  .opt:hover { border-color: #06b6d4; background: var(--glow); }
+  .opt.selected { border-color: #06b6d4; background: var(--glow); }
+  .opt.correct { border-color: #10b981; background: rgba(16,185,129,0.08); }
+  .opt.wrong { border-color: #ef4444; background: rgba(239,68,68,0.08); }
+  .opt input[type=radio] { display: none; }
+  .opt-l { width: 20px; height: 20px; border-radius: 5px; background: var(--border2); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: var(--muted); flex-shrink: 0; transition: all 0.18s; }
+  .opt.selected .opt-l { background: #06b6d4; color: #fff; }
+  .opt.correct .opt-l { background: #10b981; color: #fff; }
+  .opt.wrong .opt-l { background: #ef4444; color: #fff; }
+  .opt label { cursor: pointer; font-size: 0.88rem; color: #cbd5e1; line-height: 1.4; }
+  .footer { max-width: 700px; margin: 0 auto; padding: 14px 24px 48px; }
+  .submit-btn { display: block; width: 100%; padding: 14px; background: linear-gradient(135deg, #06b6d4, #0ea5e9); color: #fff; border: none; border-radius: 11px; font-size: 0.97rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+  .submit-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  .submit-btn:disabled { background: var(--border2); color: var(--muted); cursor: not-allowed; transform: none; }
+  #result { display: none; max-width: 600px; margin: 0 auto; padding: 28px 24px 56px; }
+  .res-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px 24px; text-align: center; }
+  .res-circle { width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 1.8rem; font-weight: 800; }
+  .rg { background: rgba(16,185,129,0.1); color: #10b981; border: 3px solid #10b981; }
+  .rm { background: rgba(245,158,11,0.1); color: #f59e0b; border: 3px solid #f59e0b; }
+  .rb { background: rgba(239,68,68,0.1); color: #ef4444; border: 3px solid #ef4444; }
+  .res-title { font-size: 1.25rem; font-weight: 800; color: #f1f5f9; margin-bottom: 5px; }
+  .res-sub { color: var(--muted); font-size: 0.87rem; margin-bottom: 20px; }
+  .res-stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+  .rs { text-align: center; }
+  .rs-n { font-size: 1.4rem; font-weight: 800; }
+  .rs-n.g { color: #10b981; } .rs-n.r { color: #ef4444; } .rs-n.b { color: #67e8f9; }
+  .rs-l { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .fb-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: left; margin-bottom: 18px; }
+  .fb-title { font-size: 0.7rem; font-weight: 700; color: #67e8f9; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .fb-text { font-size: 0.86rem; color: var(--dim); line-height: 1.65; }
+  .loading { font-style: italic; color: var(--muted); }
+  .errors-box { margin-top: 16px; text-align: left; }
+  .errors-title { font-size: 0.75rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .err-item { background: var(--bg); border: 1px solid rgba(239,68,68,0.25); border-radius: 9px; padding: 12px 14px; margin-bottom: 8px; }
+  .err-num { font-size: 0.65rem; font-weight: 700; color: #ef4444; text-transform: uppercase; margin-bottom: 5px; }
+  .err-question { font-size: 0.85rem; font-weight: 600; color: #e2e8f0; margin-bottom: 8px; line-height: 1.4; }
+  .err-row { display: flex; align-items: flex-start; gap: 7px; margin-bottom: 4px; }
+  .err-badge { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .err-badge.wb { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+  .err-badge.cb { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .err-answer { font-size: 0.82rem; color: var(--dim); line-height: 1.35; }
+  .err-answer.ca { color: #6ee7b7; font-weight: 500; }
+  .no-errors { text-align: center; padding: 16px; color: #10b981; font-size: 0.92rem; font-weight: 600; }
+  .res-btns { display: flex; gap: 10px; }
+  .btn-retry { flex: 1; padding: 12px; background: none; border: 1.5px solid var(--border2); color: var(--dim); border-radius: 9px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+  .btn-retry:hover { border-color: #06b6d4; color: #67e8f9; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-tag">Capitoli 26–30</div>
+  <h1>Quiz – <span>Cap. 26–30</span></h1>
+  <p>Monitoraggio e controllo, Earned Value, reportistica, chiusura del progetto e metodologie Agili/Scrum.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="s-total">–</div><div class="stat-l">Domande</div></div>
+    <div class="stat"><div class="stat-n">5</div><div class="stat-l">Capitoli</div></div>
+    <div class="stat"><div class="stat-n">70%</div><div class="stat-l">Per passare</div></div>
+  </div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-top"><span class="prog-label">Avanzamento</span><span class="prog-count" id="prog-count">0 / –</span></div>
+  <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+</div>
+<div id="quiz-body"></div>
+<div class="footer"><button class="submit-btn" id="submit-btn" onclick="submitQuiz()" disabled>Consegna</button></div>
+<div id="result">
+  <div class="res-card">
+    <div class="res-circle" id="res-circle"></div>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-sub" id="res-sub"></div>
+    <div class="res-stats">
+      <div class="rs"><div class="rs-n g" id="rs-ok">-</div><div class="rs-l">Corrette</div></div>
+      <div class="rs"><div class="rs-n r" id="rs-no">-</div><div class="rs-l">Errate</div></div>
+      <div class="rs"><div class="rs-n b" id="rs-pct">-</div><div class="rs-l">Punteggio</div></div>
+    </div>
+    <div class="fb-box"><div class="fb-title">💬 Feedback</div><div class="fb-text" id="fb-text"><span class="loading">Generazione…</span></div></div>
+    <div class="errors-box" id="errors-box"></div>
+    <div class="res-btns"><button class="btn-retry" onclick="resetQuiz()">🔄 Riprova</button></div>
+  </div>
+</div>
+<script>
+const sections = [
+  {
+    chip: "Cap. 26 — Monitoraggio e Controllo",
+    title: "Data Date, periodi di avanzamento e best practice",
+    qs: [{ q: 'Le "Curve ad S" durante la Pianificazione mostrano il:', o: ['Costo Effettivo (AC) nel tempo', 'Valore Pianificato (PV) nel tempo; il PV totale è uguale al BAC', 'Earned Value (EV) nel tempo', 'Confronto tra SPI e CPI nel tempo'], c: 1 },{ q: '"Il Piano di Progetto ha senso ed è utilizzabile solo se è aggiornato." Questa affermazione riguarda quale principio?', o: ["L'importanza della Baseline come riferimento fisso e immutabile", 'Il principio fondamentale del periodo di consolidamento: i sensori raccolgono dati che aggiornano il piano', 'La necessità di approvare formalmente ogni modifica al piano', 'Il ruolo del PMO nel raccogliere e validare i dati di avanzamento'], c: 1 },{ q: 'La "Varianza dei Costi" (Cost Variance) nelle Curve ad S rappresenta:', o: ['La differenza tra CPI e SPI alla data corrente', 'Lo scostamento tra il valore pianificato (baseline dei costi) e il costo effettivamente sostenuto alla data date', 'Il costo totale previsto per completare il progetto', 'La differenza tra BAC e EAC alla fine del progetto'], c: 1 }]
+  },
+  {
+    chip: "Cap. 27 — Earned Value Management",
+    title: "PV, AC, EV, varianze, indici e tecniche",
+    qs: [{ q: 'La tecnica "Fixed Formula 0/100" assegna il valore:', o: ["50% all'inizio e 50% al completamento dell'attività", 'Il 100% assorbito al completamento; adatta per Work Package molto brevi', "25% all'inizio e 75% al completamento", "Proporzionalmente durante tutta la durata dell'attività"], c: 1 },{ q: 'La "Percent Complete" (PCC) si calcola come:', o: ['EV / BAC × 100', 'AC / (AC + ETC)', 'EV / PV × 100', '(BAC – EV) / BAC'], c: 1 },{ q: 'Il Schedule Performance Index (SPI) = EV / PV. Se SPI = 1,25 significa che:', o: ['Il progetto sta spendendo il 25% in più del budget previsto', 'Il progetto sta producendo il 25% di valore in più rispetto al pianificato: trend in anticipo sui tempi', 'Il progetto è in ritardo del 25% rispetto alla schedulazione', 'Il progetto ha completato il 125% del lavoro totale previsto'], c: 1 },{ q: 'Nella "Matrice SPI → CPI – Visione di Portfolio", la dimensione della bolla rappresenta:', o: ['La durata residua del progetto', 'I costi assegnati al progetto', 'Il numero di risorse coinvolte nel progetto', 'La priorità del progetto nel portafoglio'], c: 1 },{ q: "Nell'esempio applicativo del sito WEB del materiale (4000 pagine, budget 400.000€, dopo 6 mesi 1000 pagine completate e 300.000€ spesi), lo SPI è:", o: ['SPI = 1,5', 'SPI = 0,75', 'SPI = 0,5', 'SPI = 2'], c: 2 }]
+  },
+  {
+    chip: "Cap. 28 — Reportistica",
+    title: "Report, strumenti e Project Information Sets",
+    qs: [{ q: 'I "ritardi strutturali" nei Report di Trend sono:', o: ['Problemi temporanei che possono essere risolti con azioni correttive immediate', "Problemi sistemici che richiedono interventi più profondi nell'organizzazione del progetto", 'Ritardi causati da eventi esterni non prevedibili e non controllabili', 'Differenze tra la baseline contrattuale e quella di controllo'], c: 1 },{ q: 'Il "Project Status by Data Date" è il terzo set informativo del ciclo di pianificazione. Contiene:', o: ['Gli obiettivi, deliverable, stakeholder e vincoli iniziali del progetto', 'WBS, Schedule, Risk, Quality, Costs aggiornati e commenti del PM', 'La WBS dettagliata, il Piano di Comunicazione e il Risk Register', 'Solo i costi aggiornati e il confronto con la Cost Baseline'], c: 1 },{ q: 'La frequenza di reporting "non dovrebbe essere superiore a un mese" e i dati devono essere:', o: ['Aggiornati da non più di due settimane prima della consegna del report', 'Aggiornati in tempo reale grazie ai sistemi informativi di gestione', 'Verificati e approvati formalmente dallo Sponsor prima della distribuzione', "Raccolti direttamente dal PM senza intermediari per garantire l'accuratezza"], c: 0 }]
+  },
+  {
+    chip: "Cap. 29 — Chiusura del Progetto",
+    title: "Processi di chiusura, attività e lesson learned",
+    qs: [{ q: 'La "Riunione di Chiusura" deve svolgersi in un "clima positivo" orientato a:', o: ['La valutazione delle performance individuali dei membri del team', 'Il miglioramento continuo: analisi di risultati, punti di forza e aree di miglioramento', 'La rinegoziazione dei contratti con i fornitori per progetti futuri', 'La redistribuzione del budget residuo tra i progetti attivi'], c: 1 },{ q: 'L\'"Archiviazione dei documenti" nella chiusura serve a:', o: ['Ridurre i costi di gestione eliminando la documentazione non necessaria', 'Organizzare e conservare tutta la documentazione di progetto per riferimento futuro', 'Trasferire la documentazione esclusivamente al cliente finale del progetto', 'Aggiornare il sistema informativo aziendale con i dati finali del progetto'], c: 1 }]
+  },
+  {
+    chip: "Cap. 30 — Agile e Scrum",
+    title: "Manifesto Agile, Scrum: ruoli, eventi e artefatti",
+    qs: [{ q: 'L\'approccio "R&D" al Project Management è adatto a:', o: ["Progetti con tutti i requisiti chiari e congelati fin dall'inizio", 'Progetti con deliverable continui e rilasci frequenti ogni 2-4 settimane', 'Progetti di ricerca e sviluppo con alta incertezza che bilanciano elementi predittivi e adattativi', 'Progetti con un cliente specifico e requisiti ben definiti nel capitolato'], c: 2 },{ q: 'Lo Scrum Master svolge "servizi" a tre livelli. Quale livello NON è citato nel materiale?', o: ['Servizio al Product Owner', 'Servizio al Team di Sviluppo', 'Servizio al Cliente finale del prodotto', "Servizio all'Organizzazione"], c: 2 },{ q: 'Il "Daily Scrum" si svolge "ogni giorno allo stesso orario e nello stesso luogo" per:', o: ["Permettere allo Scrum Master di controllare l'avanzamento individuale di ogni membro", 'Ridurre la complessità e garantire la costanza del ritmo di sincronizzazione del team', 'Aggiornare il Product Backlog con le nuove priorità del Product Owner', 'Identificare i bug e i problemi tecnici emersi nelle ultime 24 ore'], c: 1 },{ q: 'L\'"Incremento" in Scrum deve essere "potenzialmente rilasciabile" alla fine di ogni Sprint perché:', o: ['Il cliente deve approvare formalmente ogni Incremento prima del prossimo Sprint', 'È cumulativo: aggiunge valore agli Incrementi precedenti e deve soddisfare la Definition of Done', 'Lo Scrum Master deve certificare che ogni Incremento rispetti gli standard tecnici', 'Il Product Owner deve testare personalmente ogni funzionalità prima del rilascio'], c: 1 },{ q: 'La "User Story" in Scrum ha la forma tipica:', o: ['"Il sistema deve implementare la funzione X con le specifiche tecniche Y"', '"Come [tipo utente], voglio [obiettivo] in modo da [beneficio]"', '"Attività X: durata 3 giorni, effort 2 giorni/uomo, assegnata a risorsa Y"', '"Milestone: completamento del modulo X entro la data Y con approvazione del PO"'], c: 1 }]
+  }
+];
+const allQ=[]; sections.forEach(s=>s.qs.forEach(q=>allQ.push({...q})));
+const TOTAL=allQ.length; let answers=Array(TOTAL).fill(null);
+document.getElementById("s-total").textContent=TOTAL;
+document.getElementById("prog-count").textContent="0 / "+TOTAL;
+function build(){const body=document.getElementById("quiz-body");body.innerHTML="";let gi=0;sections.forEach(sec=>{const sh=document.createElement("div");sh.className="sec-head";sh.innerHTML=`<div class="sec-chip">${sec.chip}</div><div class="sec-title">${sec.title}</div>`;body.appendChild(sh);const wrap=document.createElement("div");wrap.className="cards";sec.qs.forEach(()=>{const i=gi;const q=allQ[i];const card=document.createElement("div");card.className="qcard";card.innerHTML=`<div class="qnum">Domanda ${i+1} di ${TOTAL}</div><div class="qtext">${q.q}</div>${q.o.map((op,j)=>`<div class="opt" id="o-${i}-${j}" onclick="pick(${i},${j})"><input type="radio" name="q${i}"><div class="opt-l">${String.fromCharCode(65+j)}</div><label>${op}</label></div>`).join("")}`;wrap.appendChild(card);gi++;});body.appendChild(wrap);});}
+function pick(qi,oi){answers[qi]=oi;for(let j=0;j<allQ[qi].o.length;j++)document.getElementById(`o-${qi}-${j}`).classList.remove("selected");document.getElementById(`o-${qi}-${oi}`).classList.add("selected");const done=answers.filter(a=>a!==null).length;document.getElementById("prog-fill").style.width=(done/TOTAL*100)+"%";document.getElementById("prog-count").textContent=`${done} / ${TOTAL}`;document.getElementById("submit-btn").disabled=done<TOTAL;}
+function submitQuiz(){let score=0;const wrong=[];allQ.forEach((q,i)=>{const c=q.c,ch=answers[i];for(let j=0;j<q.o.length;j++){const el=document.getElementById(`o-${i}-${j}`);el.style.pointerEvents="none";if(j===c)el.classList.add("correct");else if(j===ch)el.classList.add("wrong");}if(ch===c)score++;else wrong.push({n:i+1,q:q.q,y:q.o[ch],c:q.o[c]});});document.getElementById("submit-btn").style.display="none";const pct=Math.round(score/TOTAL*100);const circle=document.getElementById("res-circle");circle.textContent=pct+"%";circle.className="res-circle "+(pct>=70?"rg":pct>=50?"rm":"rb");document.getElementById("res-title").textContent=pct>=80?"🎉 Ottimo!":pct>=60?"👍 Quasi!":"📚 Ripassia!";document.getElementById("res-sub").textContent=`Capitoli 26–30 · ${score}/${TOTAL} corrette`;document.getElementById("rs-ok").textContent=score;document.getElementById("rs-no").textContent=TOTAL-score;document.getElementById("rs-pct").textContent=pct+"%";document.getElementById("result").style.display="block";document.getElementById("result").scrollIntoView({behavior:"smooth"});buildErrors(wrong);fetchFeedback(score,pct,wrong);}
+function buildErrors(wrong){const box=document.getElementById("errors-box");if(wrong.length===0){box.innerHTML='<div class="no-errors">✅ Perfetto!</div>';return;}let html=`<div class="errors-title">❌ Risposte errate (${wrong.length})</div>`;wrong.forEach(w=>{html+=`<div class="err-item"><div class="err-num">D${w.n}</div><div class="err-question">${w.q}</div><div class="err-row"><span class="err-badge wb">Tua</span><span class="err-answer">${w.y}</span></div><div class="err-row"><span class="err-badge cb">Corretta</span><span class="err-answer ca">${w.c}</span></div></div>`;});box.innerHTML=html;}
+async function fetchFeedback(score,pct,wrong){const ws=wrong.length===0?"Nessun errore!":wrong.slice(0,6).map(w=>`- D${w.n}: "${w.q.substring(0,50)}…" → "${w.y}" (corretta: "${w.c}")`).join("\n");const prompt=`Professore di PM. Studente quiz Capitoli 26–30 (Cap 26-30: monitoraggio, Curve ad S, EVM (PV AC EV SV CV SPI CPI), reportistica, chiusura, Agile, Scrum). Risultato: ${score}/${TOTAL} (${pct}%). Errori: ${ws}. Feedback 4 righe italiano: incoraggiante, cosa ripassare, consiglio pratico.`;try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:800,messages:[{role:"user",content:prompt}]})});const d=await r.json();document.getElementById("fb-text").textContent=d.content?.find(b=>b.type==="text")?.text||"Feedback non disponibile.";}catch{document.getElementById("fb-text").textContent="Feedback non disponibile.";}}
+function resetQuiz(){answers=Array(TOTAL).fill(null);document.getElementById("result").style.display="none";document.getElementById("submit-btn").style.display="block";document.getElementById("submit-btn").disabled=true;document.getElementById("prog-fill").style.width="0%";document.getElementById("prog-count").textContent=`0 / ${TOTAL}`;build();window.scrollTo(0,0);}
+build();
+</script>
+</body>
+</html>
